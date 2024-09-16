@@ -33,5 +33,3 @@ public class MovieDTO {
     private int voteCount;
     private List<GenreDTO> genres;
 }
-
-
