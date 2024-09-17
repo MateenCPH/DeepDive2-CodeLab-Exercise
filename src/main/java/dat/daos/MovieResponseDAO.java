@@ -5,6 +5,9 @@ import dat.dtos.MovieResponseDTO;
 import java.util.Set;
 
 public class MovieResponseDAO implements IDAO<MovieResponseDTO> {
+
+    //Skal måske ikke implements iDAo ?
+
     @Override
     public MovieResponseDTO create(MovieResponseDTO movieResponseDTO) {
         return null;

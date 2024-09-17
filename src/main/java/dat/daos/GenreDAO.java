@@ -1,32 +1,62 @@
 package dat.daos;
 
 import dat.dtos.GenreDTO;
+import dat.entities.Genre;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceException;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
-public class GenreDAO implements IDAO<GenreDTO> {
+public class GenreDAO implements IDAO<Genre> {
+
+    private EntityManagerFactory emf;
+
+    public GenreDAO(EntityManagerFactory emf){
+        this.emf = emf;
+    }
+
     @Override
-    public GenreDTO create(GenreDTO genreDTO) {
+    public Genre create(Genre genre) {
         return null;
     }
 
     @Override
-    public GenreDTO update(GenreDTO genreDTO) {
+    public Genre update(Genre genre) {
         return null;
     }
 
     @Override
-    public void delete(GenreDTO genreDTO) {
+    public void delete(Genre genre) {
+        try(EntityManager em = emf.createEntityManager()){
+            em.getTransaction().begin();
+            em.remove(genre);
+            em.getTransaction().commit();
+        } catch (PersistenceException e){
+            System.out.println("Error deleting Genre" +e);
+            return;
+        }
 
     }
 
     @Override
-    public GenreDTO getById(Long id) {
-        return null;
+    public Genre getById(Long id) {
+        try(EntityManager em = emf.createEntityManager()){
+            return em.find(Genre.class,id);
+        } catch (PersistenceException e){
+            System.out.println("Error while getting Genre by id" +e);
+            return null;
+        }
     }
 
     @Override
-    public Set<GenreDTO> getAll() {
-        return Set.of();
+    public Set<Genre> getAll() {
+        try(EntityManager em = emf.createEntityManager()){
+            return em.createQuery("SELECT g FROM Genre g",Genre.class).getResultStream().collect(Collectors.toSet());
+        } catch (PersistenceException e){
+            System.out.println("Error while getting Genre list" +e);
+            return null;
+        }
     }
 }
