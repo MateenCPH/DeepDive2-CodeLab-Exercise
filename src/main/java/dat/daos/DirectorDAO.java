@@ -1,33 +1,33 @@
 package dat.daos;
 
-import dat.dtos.DirectorDTO;
+import dat.dtos.PersonDTO;
 
 import java.util.Set;
 
-public class DirectorDAO implements IDAO<DirectorDTO> {
+public class DirectorDAO implements IDAO<PersonDTO> {
 
     @Override
-    public DirectorDTO create(DirectorDTO directorDTO) {
+    public PersonDTO create(PersonDTO directorDTO) {
         return null;
     }
 
     @Override
-    public DirectorDTO update(DirectorDTO directorDTO) {
+    public PersonDTO update(PersonDTO directorDTO) {
         return null;
     }
 
     @Override
-    public void delete(DirectorDTO directorDTO) {
+    public void delete(PersonDTO directorDTO) {
 
     }
 
     @Override
-    public DirectorDTO getById(Long id) {
+    public PersonDTO getById(Long id) {
         return null;
     }
 
     @Override
-    public Set<DirectorDTO> getAll() {
+    public Set<PersonDTO> getAll() {
         return Set.of();
     }
 }
