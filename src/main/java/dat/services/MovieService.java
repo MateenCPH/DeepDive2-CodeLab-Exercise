@@ -12,10 +12,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MovieService {
@@ -95,12 +92,10 @@ public class MovieService {
         } catch (IOException | InterruptedException | RuntimeException e) {
             e.printStackTrace();
         }
-        return null;
+        return Collections.emptyList();
     }
 
-
-    public static List<MovieDTO> getAllMoviesByReleaseDate(String releaseDate) throws
-            IOException, InterruptedException {
+    public static List<MovieDTO> getAllMoviesByReleaseDate(String releaseDate) throws IOException, InterruptedException {
         int page = 1;
         int totalPages;
         List<MovieDTO> allMovies = new LinkedList<>();
@@ -153,9 +148,64 @@ public class MovieService {
         } catch (IOException | InterruptedException | RuntimeException e) {
             e.printStackTrace();
         }
-        return null;
+        return Collections.emptyList();
     }
 
+    public static List<MovieDTO> getAllDanishMovies() throws IOException, InterruptedException {
+        int page = 1;
+        int totalPages;
+        List<MovieDTO> allMovies = new LinkedList<>();
 
+        try {
+            do {
+                StringBuilder url = new StringBuilder("https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&page=")
+                        .append(page)
+                        .append("&primary_release_date.gte=2019-09-01")
+                        .append("&sort_by=primary_release_date.asc")
+                        .append("&with_original_language=da")  // Filter by Danish language
+                        .append("&api_key=")
+                        .append(API_KEY);
 
+                HttpClient client = HttpClient.newHttpClient();
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url.toString()))
+                        .GET()
+                        .build();
+
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+                // Check if the response is successful
+                if (response.statusCode() != 200) {
+                    throw new RuntimeException("Failed to fetch movies: HTTP code " + response.statusCode());
+                }
+
+                ObjectMapper objectMapper = new ObjectMapper();
+                objectMapper.registerModule(new JavaTimeModule());
+
+                String jsonString = response.body();
+                MovieResponseDTO movieResponse = objectMapper.readValue(jsonString, MovieResponseDTO.class);
+
+                if (movieResponse.getResults() == null || movieResponse.getResults().isEmpty()) {
+                    System.out.println("No movies found for this page.");
+                    break;  // Stop if no more movies are found
+                }
+
+                List<MovieDTO> movies = movieResponse.getResults();
+                allMovies.addAll(movies); // Add movies from the current page to the list
+
+                // Update total pages and increment the page counter
+                totalPages = movieResponse.getTotalPages();
+                page++;
+
+                System.out.printf("Progress: %d%%%n", (int) Math.floor((double) page / totalPages * 100));
+
+            } while (page <= totalPages);
+
+            // Return the complete list of movies after sorting by release date
+            return allMovies;
+        } catch (IOException | InterruptedException | RuntimeException e) {
+            e.printStackTrace();
+        }
+        return Collections.emptyList();
+    }
 }
