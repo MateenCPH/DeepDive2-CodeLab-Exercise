@@ -179,7 +179,7 @@ public class MovieService {
             do {
                 StringBuilder url = new StringBuilder("https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&page=")
                         .append(page)
-                        .append("&primary_release_date.gte=2019-09-01&sort_by=primary_release_date.asc&with_origin_country=DK&api_key=")
+                        .append("&primary_release_date.gte=2019-09-01&sort_by=primary_release_date.asc&with_original_language=da=DK&api_key=")
                         .append(API_KEY);
                 HttpClient client = HttpClient.newHttpClient();
                 HttpRequest request = HttpRequest.newBuilder()
