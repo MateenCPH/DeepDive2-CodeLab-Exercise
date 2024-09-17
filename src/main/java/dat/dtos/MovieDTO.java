@@ -1,7 +1,9 @@
 package dat.dtos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import dat.entities.Genre;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +11,8 @@ import lombok.ToString;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Data
 @ToString
@@ -41,5 +45,17 @@ public class MovieDTO {
     @JsonProperty("vote_count")
     private int voteCount;
 
-    private List<GenreDTO> genres;
+    @JsonProperty("genre_ids")
+    private List<Integer> genres;
+
+    @JsonIgnore
+    private List<String> genreNames;  // This will be populated later
+
+    public void setGenreNames(Map<Integer, String> genreMap) {
+        if (genres != null) {
+            genreNames = genres.stream()
+                    .map(genreMap::get)
+                    .collect(Collectors.toList());
+        }
+    }
 }
