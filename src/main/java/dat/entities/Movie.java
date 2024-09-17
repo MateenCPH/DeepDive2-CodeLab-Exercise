@@ -36,7 +36,7 @@ public class Movie {
     @Column(name = "popularity", nullable = false)
     private double popularity;
 
-    @Column(name = "releaseDate", nullable = false)
+    @Column(name = "release_date", nullable = false)
     private LocalDate releaseDate;
 
     @Column(name = "video")
