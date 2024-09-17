@@ -2,10 +2,7 @@ package dat.entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import dat.dtos.GenreDTO;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -34,5 +31,6 @@ public class Movie {
     private double voteAverage;
     private int voteCount;
 
+    @ManyToMany
     private List<Genre> genres;
 }
