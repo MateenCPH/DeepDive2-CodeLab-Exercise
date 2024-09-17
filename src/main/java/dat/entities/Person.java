@@ -12,10 +12,6 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
-@Builder
-@ToString
 public class Person {
 
     @Id

@@ -6,16 +6,13 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
-@Builder
-@ToString
 public class Movie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,6 +52,29 @@ public class Movie {
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
     private List<Genre> genres;
+
+    //PrePersist and PreUpdate methods
+    @Column(name = "created_date_time", nullable = false, updatable = false)
+    private LocalDateTime createdDateTime;
+
+    @ToString.Exclude
+    @Column(name = "updated_date_time", nullable = false)
+    private LocalDateTime updatedDateTime;
+
+    @PrePersist
+    public void prePersist() {
+        if (createdDateTime == null) {
+            createdDateTime = LocalDateTime.now();
+        }
+        if (updatedDateTime == null) {
+            updatedDateTime = LocalDateTime.now();
+        }
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        updatedDateTime = LocalDateTime.now();
+    }
 
     @ManyToMany()
     @Column(name = "actors_and_directors")
