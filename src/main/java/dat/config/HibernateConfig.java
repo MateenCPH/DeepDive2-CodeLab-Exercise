@@ -1,5 +1,8 @@
 package dat.config;
 
+import dat.entities.Genre;
+import dat.entities.Movie;
+import dat.entities.Person;
 import jakarta.persistence.EntityManagerFactory;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
@@ -30,6 +33,9 @@ public class HibernateConfig {
     // TODO: IMPORTANT: Add Entity classes here for them to be registered with Hibernate
     private static void getAnnotationConfiguration(Configuration configuration) {
         // Add all entity classes here
+        configuration.addAnnotatedClass(Genre.class);
+        configuration.addAnnotatedClass(Movie.class);
+        configuration.addAnnotatedClass(Person.class);
         //configuration.addAnnotatedClass(Person.class);
     }
 

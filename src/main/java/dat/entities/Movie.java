@@ -49,7 +49,11 @@ public class Movie {
     private int voteCount;
 
     @ManyToMany
-    @Column(name = "genres")
+    @JoinTable(
+            name = "movie_genre",
+            joinColumns = @JoinColumn(name = "movie_id"),
+            inverseJoinColumns = @JoinColumn(name = "genre_id")
+    )
     private List<Genre> genres;
 
     @ManyToMany()
