@@ -7,11 +7,14 @@ import dat.dtos.MovieResponseDTO;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,7 +24,7 @@ public class MovieService {
     private static final String BASE_URL = "https://api.themoviedb.org/3/movie/";
     private static final String BASE_URL_DISCOVER = "https://api.themoviedb.org/3/discover/movie";
 
-    public static String getMovieById(int id) throws IOException, InterruptedException {
+    public static MovieDTO getMovieById(int id) throws IOException, InterruptedException {
         String url = BASE_URL + id + "?api_key=" + API_KEY;
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -33,57 +36,126 @@ public class MovieService {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         String jsonString = response.body();
-        MovieDTO movieDTO = objectMapper.readValue(jsonString, MovieDTO.class);
 
-        return movieDTO.toString();
+        return objectMapper.readValue(jsonString, MovieDTO.class);
     }
 
     public static List<MovieDTO> getByRating(double ratingOne, double ratingTwo) throws IOException, InterruptedException {
-        String url = BASE_URL_DISCOVER + "?api_key=" + API_KEY + "&vote_average.gte=" + ratingOne + "&vote_average.lte=" + ratingTwo;
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .GET()
-                .build();
+        int page = 1;
+        int totalPages;
+        List<MovieDTO> allMovies = new LinkedList<>();
 
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        String jsonString = response.body();
+        try {
+            do {
+                StringBuilder url = new StringBuilder("https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=")
+                        .append(page)
+                        .append("&sort_by=popularity.desc&vote_average.gte=")
+                        .append(ratingOne)
+                        .append("&vote_average.lte=")
+                        .append(ratingOne)
+                        .append("&api_key=")
+                        .append(API_KEY);
+                HttpClient client = HttpClient.newHttpClient();
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url.toString()))
+                        .GET()
+                        .build();
 
-        MovieResponseDTO movieResponse = objectMapper.readValue(jsonString, MovieResponseDTO.class);
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        return movieResponse.getResults();
-    }
+                // Check if the response is successful
+                if (response.statusCode() != 200) {
+                    throw new RuntimeException("Failed to fetch movies: HTTP code " + response.statusCode());
+                }
 
-    public static String getMoviesByReleaseDate(String releaseDate) throws IOException, InterruptedException {
-        String url = BASE_URL_DISCOVER + "?api_key=" + API_KEY + "&primary_release_date.gte=" + releaseDate;
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .GET()
-                .build();
+                ObjectMapper objectMapper = new ObjectMapper();
+                objectMapper.registerModule(new JavaTimeModule());
 
+                String jsonString = response.body();
+                MovieResponseDTO movieResponse = objectMapper.readValue(jsonString, MovieResponseDTO.class);
 
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                if (movieResponse.getResults() == null || movieResponse.getResults().isEmpty()) {
+                    System.out.println("No movies found for this page.");
+                    break;  // Stop if no more movies are found
+                }
 
-        // Check if the response is successful
-        if (response.statusCode() != 200) {
-            throw new RuntimeException("Failed to fetch movies: HTTP code " + response.statusCode());
+                List<MovieDTO> movies = movieResponse.getResults();
+                allMovies.addAll(movies); // Add movies from the current page to the list
+
+                // Update total pages and increment the page counter
+                totalPages = movieResponse.getTotalPages();
+                page++;
+
+                System.out.printf("Progress: %d%%%n", (int) Math.floor((double) page / totalPages * 100));
+
+            } while (page <= totalPages);
+
+            // Return the complete list of movies after sorting by release date
+            return allMovies;
+        } catch (IOException | InterruptedException | RuntimeException e) {
+            e.printStackTrace();
         }
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-
-        String jsonString = response.body();
-
-        MovieResponseDTO movieResponse = objectMapper.readValue(jsonString, MovieResponseDTO.class);
-
-        List<MovieDTO> movies = movieResponse.getResults();
-        return movies.stream()
-                .filter(movie -> movie.getReleaseDate().isAfter(LocalDate.parse(releaseDate)))
-                .sorted(Comparator.comparing(MovieDTO::getReleaseDate)) // Sort by release date (ascending)
-                .map(MovieDTO::toString)
-                .collect(Collectors.joining("\n"));
+        return null;
     }
+
+
+    public static List<MovieDTO> getAllMoviesByReleaseDate(String releaseDate) throws
+            IOException, InterruptedException {
+        int page = 1;
+        int totalPages;
+        List<MovieDTO> allMovies = new LinkedList<>();
+
+        try {
+            do {
+                StringBuilder url = new StringBuilder("https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=")
+                        .append(page)
+                        .append("&primary_release_date.gte=")
+                        .append(releaseDate)
+                        .append("&sort_by=primary_release_date.asc&api_key=")
+                        .append(API_KEY);
+                HttpClient client = HttpClient.newHttpClient();
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url.toString()))
+                        .GET()
+                        .build();
+
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+                // Check if the response is successful
+                if (response.statusCode() != 200) {
+                    throw new RuntimeException("Failed to fetch movies: HTTP code " + response.statusCode());
+                }
+
+                ObjectMapper objectMapper = new ObjectMapper();
+                objectMapper.registerModule(new JavaTimeModule());
+
+                String jsonString = response.body();
+                MovieResponseDTO movieResponse = objectMapper.readValue(jsonString, MovieResponseDTO.class);
+
+                if (movieResponse.getResults() == null || movieResponse.getResults().isEmpty()) {
+                    System.out.println("No movies found for this page.");
+                    break;  // Stop if no more movies are found
+                }
+
+                List<MovieDTO> movies = movieResponse.getResults();
+                allMovies.addAll(movies); // Add movies from the current page to the list
+
+                // Update total pages and increment the page counter
+                totalPages = movieResponse.getTotalPages();
+                page++;
+
+                System.out.printf("Progress: %d%%%n", (int) Math.floor((double) page / totalPages * 100));
+
+            } while (page <= totalPages);
+
+            // Return the complete list of movies after sorting by release date
+            return allMovies;
+        } catch (IOException | InterruptedException | RuntimeException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
 
 }
