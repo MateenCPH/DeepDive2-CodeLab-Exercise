@@ -18,7 +18,6 @@ public class ActorDAO implements IDAO<ActorDTO> {
 
     @Override
     public void delete(ActorDTO actorDTO) {
-
     }
 
     @Override
