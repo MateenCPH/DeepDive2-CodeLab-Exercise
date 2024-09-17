@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
+import java.sql.Date;
 import java.time.LocalDate;
 
 @ToString
@@ -16,18 +17,24 @@ import java.time.LocalDate;
 
 public class PersonDTO {
 
+    private Long id;
     private boolean adult;
+    @JsonProperty("also_known_as")
+    private String alsoKnownAs;
+    private String biography;
+    private Date birthday;
+    private Date deathday;
     private int gender;
+    @JsonProperty("id")
+    private int personId;
+    @JsonProperty("known_for_department")
+    private String knownForDepartment;
     private String name;
-
-    @JsonProperty("originalName")
-    private String original_name;
-
-    @JsonProperty("knownForDepartment")
-    private String known_for_department;
-
+    @JsonProperty("place_of_birth")
+    private String placeOfBirth;
     private double popularity;
 
+    /*
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class known_for {
         private String title;
@@ -50,4 +57,6 @@ public class PersonDTO {
         @JsonProperty("voteCount")
         private double vote_count;
     }
+
+    */
 }

@@ -8,7 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.*;
 
-import java.time.LocalDate;
+import java.sql.Date;
 
 @Entity
 @Data
@@ -24,17 +24,22 @@ public class Person {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private boolean adult;
+    @JsonProperty("also_known_as")
+    private String alsoKnownAs;
+    private String biography;
+    private Date birthday;
+    private Date deathday;
     private int gender;
+    @JsonProperty("id")
+    private int personId;
+    @JsonProperty("known_for_department")
+    private String knownForDepartment;
     private String name;
-
-    @JsonProperty("originalName")
-    private String original_name;
-
-    @JsonProperty("knownForDepartment")
-    private String known_for_department;
-
+    @JsonProperty("place_of_birth")
+    private String placeOfBirth;
     private double popularity;
 
+    /*
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class known_for {
         private String title;
@@ -57,4 +62,6 @@ public class Person {
         @JsonProperty("voteCount")
         private double vote_count;
     }
+
+    */
 }
