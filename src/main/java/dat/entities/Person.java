@@ -2,13 +2,11 @@ package dat.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Date;
+import java.util.List;
 
 @Entity
 @Data
@@ -23,21 +21,42 @@ public class Person {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "adult_person",nullable = false)
     private boolean adult;
-    @JsonProperty("also_known_as")
+
+    @Column(name = "also_known_as",nullable = false)
     private String alsoKnownAs;
+
+    @Column(name = "biography",length = 2000)
     private String biography;
+
+    @Column(name = "birthday",nullable = false)
     private Date birthday;
+
+    @Column(name ="deathday")
     private Date deathday;
+
+    @Column(name = "gender",nullable = false)
     private int gender;
-    @JsonProperty("id")
+
+    @Column(name ="person_id",unique = true,nullable = false)
     private int personId;
-    @JsonProperty("known_for_department")
+
+    @Column(name ="known_for_department",nullable = false)
     private String knownForDepartment;
+
+    @Column(name = "name",nullable = false)
     private String name;
-    @JsonProperty("place_of_birth")
+
+    @Column(name ="place_of_birth",nullable = false)
     private String placeOfBirth;
+
+    @Column(name = "populatity")
     private double popularity;
+
+    @ManyToMany(mappedBy = "persons")
+    private List<Movie> movies;
 
     /*
     @JsonIgnoreProperties(ignoreUnknown = true)
