@@ -1,7 +1,5 @@
 package dat.daos;
 
-import dat.dtos.ActorDTO;
-
 import java.util.Set;
 
 public class ActorDAO implements IDAO<ActorDTO> {

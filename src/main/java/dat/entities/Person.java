@@ -1,4 +1,4 @@
 package dat.entities;
 
-public class Director {
+public class Person {
 }
