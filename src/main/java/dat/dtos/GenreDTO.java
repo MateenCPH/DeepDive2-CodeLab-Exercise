@@ -1,6 +1,7 @@
 package dat.dtos;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,5 +14,6 @@ import lombok.ToString;
 public class GenreDTO {
 
     private Integer id;
-    private String name;
+    @JsonProperty("name")
+    private String genreName;
 }

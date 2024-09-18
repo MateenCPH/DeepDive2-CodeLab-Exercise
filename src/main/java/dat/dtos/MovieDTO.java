@@ -43,7 +43,7 @@ public class MovieDTO {
     private double voteAverage;
 
     @JsonProperty("vote_count")
-    private int voteCount;
+    private int voteCount; //noob
 
     @JsonProperty("genre_ids")
     private List<Integer> genres;
