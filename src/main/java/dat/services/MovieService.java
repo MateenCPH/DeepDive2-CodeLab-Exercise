@@ -33,7 +33,7 @@ public class MovieService {
         GenreListResponseDTO genreListResponse = objectMapper.readValue(response.body(), GenreListResponseDTO.class);
 
         return genreListResponse.getGenres().stream()
-                .collect(Collectors.toMap(GenreDTO::getId, GenreDTO::getName));
+                .collect(Collectors.toMap(GenreDTO::getId, GenreDTO::getGenreName));
     }
 
     public static List<PersonDTO> fetchMovieCast(Long movieId) throws IOException, InterruptedException {
