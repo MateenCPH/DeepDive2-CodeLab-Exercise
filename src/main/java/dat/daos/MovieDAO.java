@@ -117,7 +117,7 @@ public class MovieDAO implements IDAO<Movie> {
             existingMovie.setVideo(movie.isVideo());
             existingMovie.setVoteAverage(movie.getVoteAverage());
             existingMovie.setGenres(movie.getGenres());
-            existingMovie.setPersons(movie.getPersons());
+            //existingMovie.setPersons(movie.getPersons());
 
             // The updatedDateTime is automatically updated in the preUpdate method
 
