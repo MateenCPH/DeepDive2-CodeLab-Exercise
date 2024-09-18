@@ -19,6 +19,33 @@ public class MovieDAO implements IDAO<Movie> {
         this.emf = emf;    }
 
 
+    /*
+    public Set<Movie> createMovies(Set<Movie> movies){
+
+        if(movies.isEmpty()){
+            System.out.println("Marcus er lækker, No movies");
+            return null;
+        }
+        for(Movie thisMovie : movies){
+            if(thisMovie.getGenres() != null){
+                try(EntityManager em = emf.createEntityManager()){
+                    em.getTransaction().commit();
+                    em.persist(thisMovie);
+                    em.getTransaction().commit();
+                } catch (PersistenceException e ){
+                    System.out.println("Error creating a list of movies" + e );
+                    return null;
+                }
+
+            } else {
+                return null;
+            }
+        }
+        return movies;
+    }
+
+     */
+
     @Override
     public Movie create(Movie movie) {
         // Check if movie has at least one genre

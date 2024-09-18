@@ -13,6 +13,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Movie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,8 +43,8 @@ public class Movie {
     @Column(name = "vote_average", nullable = false)
     private double voteAverage;
 
-    @Column(name = "vote_count", nullable = false)
-    private int voteCount;
+   // @Column(name = "vote_count", nullable = false)
+   // private int voteCount;
 
     @ManyToMany
     @JoinTable(
