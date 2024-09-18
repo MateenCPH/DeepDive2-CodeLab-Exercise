@@ -1,6 +1,5 @@
 package dat.daos;
 
-import dat.dtos.GenreDTO;
 import dat.entities.Genre;
 import dat.entities.Movie;
 import jakarta.persistence.*;
@@ -11,18 +10,18 @@ import java.util.stream.Collectors;
 
 public class GenreDAO implements IDAO<Genre> {
 
-    private EntityManagerFactory emf;
+    private final EntityManagerFactory emf;
 
     public GenreDAO(EntityManagerFactory emf) {
         this.emf = emf;
     }
 
 
-    public List<Movie> getMoviesByGenre(Long genreId) {
+    public List<Movie> getMoviesByGenre(String genreName) {
         try (EntityManager em = emf.createEntityManager()) {
             TypedQuery<Movie> query = em.createQuery(
                     "SELECT m FROM Movie m JOIN m.genres g WHERE g.id = :genreId", Movie.class);
-            query.setParameter("genreId", genreId);
+            query.setParameter("genreId", genreName);
             return query.getResultList();
         } catch (PersistenceException e) {
             System.out.println("Error while retrieving movies by genre: " + e);
@@ -37,7 +36,7 @@ public class GenreDAO implements IDAO<Genre> {
 
             try {
                 // Attempt to find the genre by name
-                existingGenre = em.createQuery("SELECT g FROM Genre g WHERE g.name = :name", Genre.class).setParameter("name", genre.getName()).getSingleResult();
+                existingGenre = em.createQuery("SELECT g FROM Genre g WHERE g.genreName = :genreName", Genre.class).setParameter("genreName", genre.getGenreName()).getSingleResult();
             } catch (NoResultException e) {
                 // Genre does not exist
             }
@@ -45,7 +44,7 @@ public class GenreDAO implements IDAO<Genre> {
             if (existingGenre != null) {
                 // update its details
                 em.getTransaction().begin();
-                existingGenre.setName(genre.getName());  // Update other fields as needed
+                existingGenre.setGenreName(genre.getGenreName());  // Update other fields as needed
                 em.merge(existingGenre);
                 em.getTransaction().commit();
                 return existingGenre;
@@ -68,8 +67,8 @@ public class GenreDAO implements IDAO<Genre> {
             Genre genreFound = em.find(Genre.class, genre.getId());
             em.getTransaction().begin();
 
-            if(genreFound.getName() != null){
-                genreFound.setName(genre.getName());
+            if(genreFound.getGenreName() != null){
+                genreFound.setGenreName(genre.getGenreName());
             }
             em.getTransaction().commit();
             return genreFound;
@@ -88,7 +87,6 @@ public class GenreDAO implements IDAO<Genre> {
             em.getTransaction().commit();
         } catch (PersistenceException e) {
             System.out.println("Error deleting Genre" + e);
-            return;
         }
     }
 
