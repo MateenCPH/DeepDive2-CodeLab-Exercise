@@ -68,8 +68,4 @@ public class Movie {
     public void preUpdate() {
         updatedDateTime = LocalDateTime.now();
     }
-
-    @ManyToMany()
-    @Column(name = "actors_and_directors")
-    private List<Person> persons;
 }
