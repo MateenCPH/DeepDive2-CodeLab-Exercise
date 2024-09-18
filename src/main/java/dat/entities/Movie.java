@@ -17,11 +17,9 @@ public class Movie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "title", length = 500, nullable = false)
     private String title;
 
-    @Column(name = "original:title", nullable = false)
+    @Column(name = "original_title", nullable = false)
     private String originalTitle;
 
     @Column(name = "adult_movie", nullable = false)
@@ -30,20 +28,12 @@ public class Movie {
     @Column(name = "original_language", nullable = false)
     private String originalLanguage;
 
-    @Column(name = "popularity", nullable = false)
     private double popularity;
-
-    @Column(name = "release_date", nullable = false)
     private LocalDate releaseDate;
-
-    @Column(name = "video")
     private boolean video;
 
     @Column(name = "vote_average", nullable = false)
     private double voteAverage;
-
-    @Column(name = "vote_count", nullable = false)
-    private int voteCount;
 
     @ManyToMany
     @JoinTable(
@@ -52,6 +42,9 @@ public class Movie {
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
     private List<Genre> genres;
+
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL)
+    private List<Cast> cast;
 
     //PrePersist and PreUpdate methods
     @Column(name = "created_date_time", nullable = false, updatable = false)

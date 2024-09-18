@@ -17,7 +17,7 @@ import java.time.LocalDate;
 
 public class PersonDTO {
 
-    private Long id;
+    private Long personId;
 
     private String name;
 
