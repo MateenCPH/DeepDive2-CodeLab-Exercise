@@ -22,6 +22,8 @@ import java.util.stream.Collectors;
 
 public class MovieDTO {
 
+    private int id;
+
     private String title;
 
     @JsonProperty("original_title")
@@ -47,6 +49,9 @@ public class MovieDTO {
 
     @JsonProperty("genre_ids")
     private List<Integer> genres;
+
+    @JsonIgnore
+    private List<PersonDTO> cast;  // This will be populated later
 
     @JsonIgnore
     private List<String> genreNames;  // This will be populated later

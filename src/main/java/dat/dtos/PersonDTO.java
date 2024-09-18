@@ -18,21 +18,18 @@ import java.time.LocalDate;
 public class PersonDTO {
 
     private Long id;
-    private boolean adult;
-    @JsonProperty("also_known_as")
-    private String alsoKnownAs;
-    private String biography;
-    private Date birthday;
-    private Date deathday;
-    private int gender;
-    @JsonProperty("id")
-    private int personId;
-    @JsonProperty("known_for_department")
-    private String knownForDepartment;
+
     private String name;
-    @JsonProperty("place_of_birth")
-    private String placeOfBirth;
-    private double popularity;
+
+    @JsonProperty("known_for_department")
+    private String role;
+
+    private int gender;
+
+    private String character;
+
+    @JsonProperty("cast_id")
+    private int castId;
 
     /*
     @JsonIgnoreProperties(ignoreUnknown = true)

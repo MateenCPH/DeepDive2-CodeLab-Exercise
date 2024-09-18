@@ -2,10 +2,7 @@ package dat.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import dat.dtos.GenreDTO;
-import dat.dtos.GenreListResponseDTO;
-import dat.dtos.MovieDTO;
-import dat.dtos.MovieResponseDTO;
+import dat.dtos.*;
 
 import java.io.IOException;
 import java.net.URI;
@@ -38,6 +35,31 @@ public class MovieService {
         return genreListResponse.getGenres().stream()
                 .collect(Collectors.toMap(GenreDTO::getId, GenreDTO::getName));
     }
+
+    public static List<PersonDTO> fetchMovieCast(Long movieId) throws IOException, InterruptedException {
+        String url = "https://api.themoviedb.org/3/movie/" + movieId + "/credits?api_key=" + API_KEY;
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .GET()
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() != 200) {
+            throw new RuntimeException("Failed to fetch cast: HTTP code " + response.statusCode());
+        }
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+
+        String jsonString = response.body();
+        CastResponseDTO castResponse = objectMapper.readValue(jsonString, CastResponseDTO.class);
+
+        return castResponse.getCast();
+
+    }
+
 
     public static MovieDTO getMovieById(int id) throws IOException, InterruptedException {
         String url = BASE_URL + id + "?api_key=" + API_KEY;
@@ -221,4 +243,67 @@ public class MovieService {
         }
         return null;
     }
+
+    public static List<MovieDTO> getAllDanishMoviesWithActors() throws IOException, InterruptedException {
+        int page = 1;
+        int totalPages;
+        List<MovieDTO> allMovies = new LinkedList<>();
+        List<PersonDTO> allCast = new LinkedList<>();
+        Map<Integer, String> genreMap = fetchGenres();
+
+        try {
+            do {
+                StringBuilder url = new StringBuilder("https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&page=")
+                        .append(page)
+                        .append("&primary_release_date.gte=2019-09-01&sort_by=primary_release_date.asc&with_original_language=da&api_key=")
+                        .append(API_KEY);
+                HttpClient client = HttpClient.newHttpClient();
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url.toString()))
+                        .GET()
+                        .build();
+
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+                if (response.statusCode() != 200) {
+                    throw new RuntimeException("Failed to fetch movies: HTTP code " + response.statusCode());
+                }
+
+                ObjectMapper objectMapper = new ObjectMapper();
+                objectMapper.registerModule(new JavaTimeModule());
+
+                String jsonString = response.body();
+                MovieResponseDTO movieResponse = objectMapper.readValue(jsonString, MovieResponseDTO.class);
+
+                if (movieResponse.getResults() == null || movieResponse.getResults().isEmpty()) {
+                    System.out.println("No movies found for this page.");
+                    break;
+                }
+
+                List<MovieDTO> movies = movieResponse.getResults();
+                movies.forEach(movie -> movie.setGenreNames(genreMap)); //Set genre names
+
+                for (MovieDTO movie : movies) {
+                    List<PersonDTO> cast = fetchMovieCast((long) movie.getId());
+                    movie.setCast(cast);
+                    allCast.addAll(cast);
+                }
+
+                allMovies.addAll(movies); // Add movies from the current page to the list
+
+                totalPages = movieResponse.getTotalPages();
+                page++;
+
+                System.out.printf("Progress: %d%%%n", (int) Math.floor((double) page / totalPages * 100));
+
+            } while (page <= totalPages);
+
+            return allMovies;
+        } catch (IOException | InterruptedException | RuntimeException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
 }
