@@ -6,6 +6,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceException;
 
+import java.awt.*;
 import java.util.Set;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -20,14 +21,86 @@ public class MovieDAO implements IDAO<Movie> {
 
     @Override
     public Movie create(Movie movie) {
-        return null;
+        // Check if movie has at least one genre
+        if (movie.getGenres() == null || movie.getGenres().isEmpty()) {
+            System.out.println("Movie must have at least one genre.");
+            return null;
+        }
+
+        try (EntityManager em = emf.createEntityManager()) {
+            // Check if a movie with the same title already exists
+            String query = "SELECT COUNT(m) FROM Movie m WHERE m.title = :title";
+            Long count = em.createQuery(query, Long.class)
+                    .setParameter("title", movie.getTitle())
+                    .getSingleResult();
+
+            if (count > 0) {
+                System.out.println("A movie with the title '" + movie.getTitle() + "' already exists.");
+                return null;
+            }
+
+            em.getTransaction().begin();
+            em.persist(movie);
+            em.getTransaction().commit();
+            return movie;
+        } catch (PersistenceException e) {
+            System.out.println("Error while creating movie: " + e);
+            return null;
+        }
+
     }
 
     @Override
     public Movie update(Movie movie) {
-        return null;
-    }
+        try (EntityManager em = emf.createEntityManager()) {
+            Movie existingMovie = em.find(Movie.class, movie.getId());
 
+            if (existingMovie == null) {
+                System.out.println("Movie with ID " + movie.getId() + " not found.");
+                return null;
+            }
+
+            // Check if the updated title is unique, excluding the current movie
+            String query = "SELECT COUNT(m) FROM Movie m WHERE m.title = :title AND m.id != :id";
+            Long count = em.createQuery(query, Long.class)
+                    .setParameter("title", movie.getTitle())
+                    .setParameter("id", movie.getId())
+                    .getSingleResult();
+
+            if (count > 0) {
+                System.out.println("A movie with the title '" + movie.getTitle() + "' already exists.");
+                return null;
+            }
+
+            // Check if updatedMovie has at least one genre
+            if (movie.getGenres() == null || movie.getGenres().isEmpty()) {
+                System.out.println("Movie must have at least one genre.");
+                return null;
+            }
+
+            em.getTransaction().begin();
+
+            // Update fields
+            existingMovie.setTitle(movie.getTitle());
+            existingMovie.setOriginalTitle(movie.getOriginalTitle());
+            existingMovie.setAdult(movie.isAdult());
+            existingMovie.setOriginalLanguage(movie.getOriginalLanguage());
+            existingMovie.setPopularity(movie.getPopularity());
+            existingMovie.setReleaseDate(movie.getReleaseDate());
+            existingMovie.setVideo(movie.isVideo());
+            existingMovie.setVoteAverage(movie.getVoteAverage());
+            existingMovie.setGenres(movie.getGenres());
+            existingMovie.setPersons(movie.getPersons());
+
+            // The updatedDateTime is automatically updated in the preUpdate method
+
+            em.getTransaction().commit();
+            return existingMovie;
+        } catch (PersistenceException e) {
+            System.out.println("Error while updating movie: " + e);
+            return null;
+        }
+    }
     @Override
     public void delete(Movie movie) {
         try (EntityManager em = emf.createEntityManager()) {
