@@ -83,6 +83,13 @@ public class Movie {
         this.video = movieDTO.isVideo();
         this.voteAverage = movieDTO.getVoteAverage();
 
+
+        this.genres = movieDTO.getGenreNames().toString();
+        this.cast = getCast();
+
+
+        /*
+
         // Handle genres, provide an empty list if getGenres() is null
         this.genres = (movieDTO.getGenres() == null ? List.of() : movieDTO.getGenres().stream()
                 .map(id -> em.find(Genre.class, id)) // Fetch existing genres from the database
@@ -93,6 +100,8 @@ public class Movie {
         this.cast = (movieDTO.getCast() == null ? List.of() : movieDTO.getCast().stream()
                 .map(personDTO -> new MovieCast(this, new Person(personDTO), personDTO.getCharacter()))
                 .collect(Collectors.toList()));
+
+         */
     }
 
     @Override

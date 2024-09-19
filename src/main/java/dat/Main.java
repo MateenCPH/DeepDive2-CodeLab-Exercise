@@ -1,6 +1,7 @@
 package dat;
 
 import dat.daos.MovieDAO;
+import dat.dtos.GenreDTO;
 import dat.dtos.MovieDTO;
 import dat.entities.Movie;
 import dat.services.MovieService;
@@ -27,14 +28,28 @@ public class Main {
         EntityManagerFactory emf = dat.config.HibernateConfig.getEntityManagerFactory("sp1_movie");
 
         MovieDAO movieDAO = new MovieDAO(emf);
-
-        MovieDTO dto = MovieService.getMovieById(611188);
-
+        List<MovieDTO> movieDTO = MovieService.getAllDanishMovies();
         EntityManager em = emf.createEntityManager();
 
-        Movie movie = new Movie(dto,em);
+        MovieDTO m1 = movieDTO.get(1);
 
-        movieDAO.saveMovie(movie);
+        List<String> gen = m1.getGenreNames();
+
+        for(String genres : gen){
+            System.out.println(genres);
+        }
+
+
+        /*
+
+        for(MovieDTO m : movieDTO){
+            Movie movie = new Movie(m,em);
+            movieDAO.saveMovie(movie);
+
+        }
+
+         */
+
 
 
     }
