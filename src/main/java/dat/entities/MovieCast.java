@@ -24,4 +24,11 @@ public class MovieCast {
     private Person person;
 
     private String character;
+
+    // Ensure there is no duplicate constructor with the same parameter list
+    public MovieCast(Movie movie, Person person, String character) {
+        this.movie = movie;
+        this.person = person;
+        this.character = character;
+    }
 }

@@ -1,18 +1,22 @@
 package dat.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import dat.dtos.GenreDTO;
+import dat.dtos.MovieDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.Objects;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "movies")
 public class Movie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -68,4 +72,29 @@ public class Movie {
     public void preUpdate() {
         updatedDateTime = LocalDateTime.now();
     }
+
+
+    public Movie(MovieDTO movieDTO, EntityManager em) {
+        this.id = (long) movieDTO.getId(); // Cast int to Long
+        this.title = movieDTO.getTitle();
+        this.originalTitle = movieDTO.getOriginalTitle();
+        this.adult = movieDTO.isAdult();
+        this.originalLanguage = movieDTO.getOriginalLanguage();
+        this.popularity = movieDTO.getPopularity();
+        this.releaseDate = movieDTO.getReleaseDate();
+        this.video = movieDTO.isVideo();
+        this.voteAverage = movieDTO.getVoteAverage();
+
+        // Handle genres, provide an empty list if getGenres() is null
+        this.genres = (movieDTO.getGenres() == null ? List.of() : movieDTO.getGenres().stream()
+                .map(id -> em.find(Genre.class, id)) // Fetch existing genres from the database
+                .filter(Objects::nonNull) // Filter out null values in case any genre IDs are invalid
+                .collect(Collectors.toList()));
+
+        // Handle cast (people), provide an empty list if getCast() is null
+        this.cast = (movieDTO.getCast() == null ? List.of() : movieDTO.getCast().stream()
+                .map(personDTO -> new MovieCast(this, new Person(personDTO), personDTO.getCharacter()))
+                .collect(Collectors.toList()));
+    }
+
 }

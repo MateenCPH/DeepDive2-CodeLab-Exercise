@@ -36,8 +36,8 @@ public class HibernateConfig {
         // Add all entity classes here
         configuration.addAnnotatedClass(Genre.class);
         configuration.addAnnotatedClass(Movie.class);
-        configuration.addAnnotatedClass(Person.class);
         configuration.addAnnotatedClass(MovieCast.class);
+        configuration.addAnnotatedClass(Person.class)
         //configuration.addAnnotatedClass(Person.class);
     }
 

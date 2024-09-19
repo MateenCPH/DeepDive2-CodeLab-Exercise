@@ -2,6 +2,7 @@ package dat.entities;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import dat.dtos.GenreDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,4 +23,10 @@ public class Genre {
 
     @ManyToMany(mappedBy = "genres")
     private List<Movie> movies;
+
+    // Constructor that accepts a GenreDTO
+    public Genre(GenreDTO genreDTO) {
+        this.id = genreDTO.getId();
+        this.genreName = genreDTO.getGenreName();
+    }
 }
