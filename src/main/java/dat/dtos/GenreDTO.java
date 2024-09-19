@@ -13,7 +13,7 @@ import lombok.ToString;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GenreDTO {
 
-    private Integer id;
+    private int id;
     @JsonProperty("name")
     private String genreName;
 }

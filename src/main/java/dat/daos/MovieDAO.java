@@ -2,6 +2,7 @@ package dat.daos;
 
 import dat.dtos.MovieDTO;
 import dat.entities.Movie;
+import dat.services.ConverterService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceException;
@@ -16,7 +17,8 @@ public class MovieDAO implements IDAO<Movie> {
     private EntityManagerFactory emf;
 
     public MovieDAO(EntityManagerFactory emf) {
-        this.emf = emf;    }
+        this.emf = emf;
+    }
 
 
     /*
@@ -46,7 +48,6 @@ public class MovieDAO implements IDAO<Movie> {
 
      */
 
-    @Override
     public Movie create(Movie movie) {
         // Check if movie has at least one genre
         if (movie.getGenres() == null || movie.getGenres().isEmpty()) {
@@ -74,7 +75,6 @@ public class MovieDAO implements IDAO<Movie> {
             System.out.println("Error while creating movie: " + e);
             return null;
         }
-
     }
 
     @Override

@@ -1,7 +1,5 @@
 package dat.entities;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import dat.dtos.GenreDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "movies")
 public class Movie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,7 +44,7 @@ public class Movie {
     private List<Genre> genres;
 
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL)
-    private List<Cast> cast;
+    private List<MovieCast> cast;
 
     //PrePersist and PreUpdate methods
     @Column(name = "created_date_time", nullable = false, updatable = false)

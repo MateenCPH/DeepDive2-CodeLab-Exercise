@@ -1,11 +1,8 @@
 package dat.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.sql.Date;
 import java.util.List;
 
 @Entity
@@ -13,6 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "person")
 public class Person {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,5 +20,5 @@ public class Person {
     private int gender;
 
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL)
-    private List<Cast> cast;
+    private List<MovieCast> cast;
 }

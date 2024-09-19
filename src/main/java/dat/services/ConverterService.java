@@ -5,25 +5,23 @@ import dat.daos.MovieDAO;
 import dat.daos.PersonDAO;
 import dat.dtos.MovieDTO;
 import dat.dtos.PersonDTO;
-import dat.entities.Cast;
+import dat.entities.MovieCast;
 import dat.entities.Genre;
 import dat.entities.Movie;
 import dat.entities.Person;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 public class ConverterService {
 
-    private MovieDAO movieDAO;
-    private PersonDAO personDAO;
-    private GenreDAO genreDAO;
+    private EntityManagerFactory emf;
 
-    public ConverterService(MovieDAO movieDAO, GenreDAO genreDAO, PersonDAO personDAO){
-        this.genreDAO = genreDAO;
-        this.movieDAO = movieDAO;
-        this.personDAO = personDAO;
+    public ConverterService(EntityManagerFactory emf){
+        this.emf = emf;
     }
 
     public Movie mapMovieDTOToEntity(MovieDTO movieDTO, EntityManager em) {
@@ -42,8 +40,8 @@ public class ConverterService {
                 .collect(Collectors.toList());
         movie.setGenres(genres);
 
-        // Handle Cast
-        List<Cast> castList = movieDTO.getCast().stream()
+        // Handle MovieCast
+        List<MovieCast> castList = movieDTO.getCast().stream()
                 .map(personDTO -> mapCastDTOToEntity(personDTO, movie, em))
                 .collect(Collectors.toList());
         movie.setCast(castList);
@@ -63,9 +61,9 @@ public class ConverterService {
         return genre;
     }
 
-    private Cast mapCastDTOToEntity(PersonDTO personDTO, Movie movie, EntityManager em) {
+    private MovieCast mapCastDTOToEntity(PersonDTO personDTO, Movie movie, EntityManager em) {
         Person person = findOrCreatePerson(personDTO, em);
-        Cast cast = new Cast();
+        MovieCast cast = new MovieCast();
         cast.setMovie(movie);
         cast.setPerson(person);
         cast.setCharacter(personDTO.getCharacter());
@@ -83,6 +81,19 @@ public class ConverterService {
             em.persist(person);
         }
         return person;
+    }
+
+    public Movie persistMovie(MovieDTO movieDTO) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            Movie movie = mapMovieDTOToEntity(movieDTO, em);
+            em.persist(movie);
+            em.getTransaction().commit();
+            return movie;
+        } finally {
+            em.close();
+        }
     }
 
     /*public Genre convertGenreToEntity(GenreDTO dto){
