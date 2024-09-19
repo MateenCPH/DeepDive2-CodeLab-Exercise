@@ -5,14 +5,16 @@ import dat.daos.MovieDAO;
 import dat.daos.PersonDAO;
 import dat.dtos.MovieDTO;
 import dat.dtos.PersonDTO;
-import dat.entities.Cast;
+
 import dat.entities.Genre;
 import dat.entities.Movie;
+import dat.entities.MovieCast;
 import dat.entities.Person;
 import jakarta.persistence.EntityManager;
 
 import java.util.List;
 import java.util.stream.Collectors;
+/*
 
 public class ConverterService {
 
@@ -25,6 +27,8 @@ public class ConverterService {
         this.movieDAO = movieDAO;
         this.personDAO = personDAO;
     }
+
+
 
     public Movie mapMovieDTOToEntity(MovieDTO movieDTO, EntityManager em) {
         Movie movie = new Movie();
@@ -43,7 +47,7 @@ public class ConverterService {
         movie.setGenres(genres);
 
         // Handle Cast
-        List<Cast> castList = movieDTO.getCast().stream()
+        List<MovieCast> castList = movieDTO.getCast().stream()
                 .map(personDTO -> mapCastDTOToEntity(personDTO, movie, em))
                 .collect(Collectors.toList());
         movie.setCast(castList);
@@ -118,4 +122,8 @@ public class ConverterService {
 
 
 
-}
+
+
+
+
+

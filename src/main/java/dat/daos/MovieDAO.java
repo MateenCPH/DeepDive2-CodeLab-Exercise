@@ -46,6 +46,17 @@ public class MovieDAO implements IDAO<Movie> {
 
      */
 
+    public void saveMovie(Movie movie) {
+
+        try (EntityManager em = emf.createEntityManager()){
+            em.getTransaction().begin();
+            em.merge(movie);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            System.out.println("Error" + e);
+            return;
+        }
+    }
     @Override
     public Movie create(Movie movie) {
         // Check if movie has at least one genre

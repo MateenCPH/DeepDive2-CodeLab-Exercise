@@ -2,6 +2,7 @@ package dat.config;
 
 import dat.entities.Genre;
 import dat.entities.Movie;
+import dat.entities.MovieCast;
 import dat.entities.Person;
 import jakarta.persistence.EntityManagerFactory;
 import org.hibernate.SessionFactory;
@@ -36,7 +37,8 @@ public class HibernateConfig {
         configuration.addAnnotatedClass(Genre.class);
         configuration.addAnnotatedClass(Movie.class);
         configuration.addAnnotatedClass(Person.class);
-        //configuration.addAnnotatedClass(Person.class);
+        configuration.addAnnotatedClass(MovieCast.class);
+
     }
 
     private static EntityManagerFactory createEMF(boolean forTest, String DBName) {
