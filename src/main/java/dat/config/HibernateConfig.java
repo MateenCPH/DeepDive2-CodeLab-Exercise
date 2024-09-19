@@ -1,5 +1,6 @@
 package dat.config;
 
+import dat.entities.MovieCast;
 import dat.entities.Genre;
 import dat.entities.Movie;
 import dat.entities.MovieCast;
@@ -38,6 +39,7 @@ public class HibernateConfig {
         configuration.addAnnotatedClass(Movie.class);
         configuration.addAnnotatedClass(MovieCast.class);
         configuration.addAnnotatedClass(Person.class);
+        configuration.addAnnotatedClass(MovieCast.class);
         //configuration.addAnnotatedClass(Person.class);
     }
 

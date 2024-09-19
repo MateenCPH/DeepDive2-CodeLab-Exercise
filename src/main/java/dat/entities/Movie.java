@@ -1,7 +1,5 @@
 package dat.entities;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import dat.dtos.GenreDTO;
 import dat.dtos.MovieDTO;
 import jakarta.persistence.*;
 import lombok.*;
@@ -97,4 +95,16 @@ public class Movie {
                 .collect(Collectors.toList()));
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Movie movie = (Movie) o;
+        return adult == movie.adult && Double.compare(popularity, movie.popularity) == 0 && video == movie.video && Double.compare(voteAverage, movie.voteAverage) == 0 && Objects.equals(id, movie.id) && Objects.equals(title, movie.title) && Objects.equals(originalTitle, movie.originalTitle) && Objects.equals(originalLanguage, movie.originalLanguage) && Objects.equals(releaseDate, movie.releaseDate) && Objects.equals(genres, movie.genres) && Objects.equals(cast, movie.cast) && Objects.equals(createdDateTime, movie.createdDateTime) && Objects.equals(updatedDateTime, movie.updatedDateTime);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title, originalTitle, adult, originalLanguage, popularity, releaseDate, video, voteAverage, genres, cast, createdDateTime, updatedDateTime);
+    }
 }
