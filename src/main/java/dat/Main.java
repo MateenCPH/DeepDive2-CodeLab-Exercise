@@ -55,6 +55,30 @@ public class Main {
         displayTopTenMostPopularMovies();
     }
 
+    public static void setup() {
+        try {
+            setupGenres();
+            setupMovies();
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void setupGenres() throws IOException, InterruptedException {
+        Set<GenreDTO> genreDTOs = MovieService.fetchGenres();
+        for (GenreDTO genreDTO : genreDTOs) {
+            Genre genre = new Genre(genreDTO);
+            genreDAO.create(genre);
+        }
+    }
+
+    public static void setupMovies() throws IOException, InterruptedException {
+        List<MovieDTO> movieDTOs = MovieService.getAllDanishMovies();
+        for (MovieDTO movieDTO : movieDTOs) {
+            movieDAO.create(movieDTO);
+        }
+    }
+
     public static void displayAllMoviesInDB() {
         Set<MovieDTO> movieDTOS = movieDAO.getAll();
         System.out.println(ANSI_BLUE + "Movies in the database:" + ANSI_RESET);
