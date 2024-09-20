@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -12,12 +14,11 @@ import lombok.NoArgsConstructor;
 @Table(name = "movie_cast")
 public class MovieCast {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "movie_id")
-    private Movie movie;
+    @ManyToMany
+    @JoinColumn(name = "cast_id")
+    private List<Movie> movies;
 
     @ManyToOne
     @JoinColumn(name = "person_id")
@@ -26,8 +27,8 @@ public class MovieCast {
     private String character;
 
     // Ensure there is no duplicate constructor with the same parameter list
-    public MovieCast(Movie movie, Person person, String character) {
-        this.movie = movie;
+    public MovieCast(Movie movies, Person person, String character) {
+        this.movies = (List<Movie>) movies;
         this.person = person;
         this.character = character;
     }

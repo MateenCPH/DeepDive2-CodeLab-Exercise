@@ -1,15 +1,18 @@
 package dat.daos;
 
 import dat.dtos.PersonDTO;
+import dat.entities.Movie;
 import dat.entities.Person;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceException;
+import jakarta.persistence.TypedQuery;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class PersonDAO implements IDAO<Person>{
+public class  PersonDAO implements IDAO<Person>{
 
     private EntityManagerFactory emf;
 
@@ -19,12 +22,28 @@ public class PersonDAO implements IDAO<Person>{
 
     @Override
     public Person create(Person person) {
-        return null;
+        try(EntityManager em = emf.createEntityManager()){
+            em.getTransaction().begin();
+            em.persist(person);
+            em.getTransaction().commit();
+            return person;
+        } catch (PersistenceException e){
+            System.out.println("Error with persisting person" + e );
+            return null;
+        }
     }
 
     @Override
     public Person update(Person person) {
-        return null;
+        try(EntityManager em = emf.createEntityManager()){
+            em.getTransaction().begin();
+            Person updatePerson = em.merge(person);
+            em.getTransaction().commit();
+            return updatePerson;
+        } catch (Exception e){
+            System.out.println("Error could not update person");
+            return null;
+        }
     }
 
     @Override
