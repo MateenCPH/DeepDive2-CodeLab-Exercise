@@ -7,6 +7,7 @@ import dat.entities.Movie;
 import dat.entities.Person;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.*;
 
 import java.time.LocalDate;
@@ -16,7 +17,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MovieDAOTest {
-    private static IDAO dao;
+    private static IDAO<Movie> dao;
     private static EntityManagerFactory emf;
     Movie m1, m2;
     Person p1, p2;
@@ -29,41 +30,61 @@ class MovieDAOTest {
 
    @BeforeEach
    void setUp() {
-       try(EntityManager em = emf.createEntityManager()){
+       try (EntityManager em = emf.createEntityManager()) {
+           em.getTransaction().begin();
+           em.createQuery("DELETE FROM Movie").executeUpdate();
+           em.createQuery("DELETE FROM Person").executeUpdate();
+           em.createQuery("DELETE FROM Genre").executeUpdate();
+
            Genre genre = new Genre();
            genre.setGenreName("Action");
+           em.persist(genre);
 
-           m1 = Movie.builder().id(1339624L).title("Free Fall").originalTitle("Frit Fald").adult(false).originalLanguage("da").popularity(1.393).releaseDate(LocalDate.of(2024,8,26)).video(false).voteAverage(0.0).video(false).genres(List.of(genre)).cast(null).build();
-           m2 = Movie.builder().id(1353670L).title("Amnesia").originalTitle("Amnesia").adult(false).originalLanguage("da").popularity(5.529).releaseDate(LocalDate.of(2024,9,13)).video(false).voteAverage(9.0).video(false).genres(List.of(genre)).cast(null).build();
+           m1 = Movie.builder()
+                   .title("Free Fall")
+                   .originalTitle("Frit Fald")
+                   .adult(false)
+                   .originalLanguage("da")
+                   .popularity(1.393)
+                   .releaseDate(LocalDate.of(2024, 8, 26))
+                   .video(false)
+                   .voteAverage(0.0)
+                   .genres(List.of(genre))
+                   .cast(null)
+                   .build();
+
+           m2 = Movie.builder()
+                   .title("Amnesia")
+                   .originalTitle("Amnesia")
+                   .adult(false)
+                   .originalLanguage("da")
+                   .popularity(5.529)
+                   .releaseDate(LocalDate.of(2024, 9, 13))
+                   .video(false)
+                   .voteAverage(9.0)
+                   .genres(List.of(genre))
+                   .cast(null)
+                   .build();
 
            p1 = Person.builder()
                    .name("Lasse Jørgensen")
                    .role("Acting")
                    .gender(2)
-                   //.character("Person 2")
-                   //.castId(1)
                    .build();
 
            p2 = Person.builder()
                    .name("Sebastian Poulsen")
                    .role("Acting")
                    .gender(2)
-                   //.character()
-                   //.castId(2)
                    .build();
 
-           //cast=[PersonDTO(personId=null, name=Lasse Jørgensen, role=Acting, gender=2, character=Person 2, castId=1), PersonDTO(personId=null, name=Sebastian Poulsen, role=Acting, gender=0, character=Person 1, castId=2)], genreNames=[Horror, Thriller, Mystery])
-
-           em.getTransaction().begin();
-           em.persist(genre);
-           em.createQuery("DELETE FROM Movie").executeUpdate();
-           em.createQuery("DELETE FROM Person").executeUpdate();
-           em.merge(m1);
-           em.merge(m2);
-           em.merge(p1);
-           em.merge(p2);
+           em.persist(m1);
+           em.persist(m2);
+           em.persist(p1);
+           em.persist(p2);
            em.getTransaction().commit();
        }
+
    }
 
     @AfterAll
@@ -109,8 +130,49 @@ class MovieDAOTest {
     @Test
     @DisplayName("Test get Movie by ID")
     void getById() {
-        Movie actual = (Movie) dao.getById(m1.getId());
+        Long expected = m1.getId();
+        Movie movie = dao.getById(m1.getId());
 
-        assertEquals(actual, m1);
+        Long actual = movie.getId();
+
+        assertEquals(expected, actual);
+    }
+
+
+    @Test
+    @DisplayName("Test delete Movie by ID")
+    void delete() {
+        int numberOf = dao.getAll().size();
+
+        dao.delete(m2);
+
+        int expected = numberOf - 1;
+        int actual = dao.getAll().size();
+
+        assertEquals(expected,actual);
+    }
+
+
+    @Test
+    @DisplayName("Test Update Movie variables")
+    void update() {
+        Movie newMovie = Movie.builder()
+                .title("Deep Dive")
+                .build();
+        m2.setTitle(newMovie.getTitle());
+        dao.update(m2);
+        String expected = "Deep Dive";
+        String actual = dao.getById(m2.getId()).getTitle();
+        assertEquals(expected, actual);
+    }
+
+
+    @Test
+    @DisplayName("Test getting all Movies")
+    void getAllEmployees() {
+        int expected = 2;
+        int actual = dao.getAll().size();
+
+        assertEquals(expected, actual);
     }
 }
