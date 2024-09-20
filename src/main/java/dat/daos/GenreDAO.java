@@ -29,6 +29,7 @@ public class GenreDAO implements IDAO<Genre> {
         }
     }
 
+
     @Override
     public Genre create(Genre genre) {
         try (EntityManager em = emf.createEntityManager()) {
@@ -36,8 +37,12 @@ public class GenreDAO implements IDAO<Genre> {
 
             try {
                 // Attempt to find the genre by name
-                existingGenre = em.createQuery("SELECT g FROM Genre g WHERE g.genreName = :genreName", Genre.class).setParameter("genreName", genre.getGenreName()).getSingleResult();
+                existingGenre = em.createQuery("SELECT g FROM Genre g WHERE g.genreName = :genreName", Genre.class)
+                        .setParameter("genreName", genre.getGenreName())
+                        .getSingleResult();
             } catch (NoResultException e) {
+                System.out.println("Error, this genre is not in the database");
+                return null;
                 // Genre does not exist
             }
 
