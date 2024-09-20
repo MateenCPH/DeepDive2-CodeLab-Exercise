@@ -2,10 +2,10 @@ package dat.dtos;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import dat.entities.Genre;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Data
 @NoArgsConstructor
@@ -13,7 +13,11 @@ import lombok.ToString;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GenreDTO {
 
-    private int id;
-    @JsonProperty("name")
-    private String genreName;
+    private Long id;
+    private String name;
+
+    public GenreDTO(Genre genre) {
+        this.id = genre.getId();
+        this.name = genre.getName();
+    }
 }

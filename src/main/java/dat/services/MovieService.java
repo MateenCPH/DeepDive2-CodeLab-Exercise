@@ -1,5 +1,6 @@
 package dat.services;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import dat.dtos.*;
@@ -18,22 +19,22 @@ public class MovieService {
     private static final String BASE_URL = "https://api.themoviedb.org/3/movie/";
     private static final String BASE_URL_DISCOVER = "https://api.themoviedb.org/3/discover/movie";
 
-    public static Map<Integer, String> fetchGenres() throws IOException, InterruptedException {
+    public static Set<GenreDTO> fetchGenres() throws IOException, InterruptedException {
         String url = "https://api.themoviedb.org/3/genre/movie/list?api_key=" + API_KEY;
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
+                .header("Accept", "Application/json")
                 .GET()
                 .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
 
-        GenreListResponseDTO genreListResponse = objectMapper.readValue(response.body(), GenreListResponseDTO.class);
+        JsonNode json = objectMapper.readTree(response.body());
+        GenreDTO[] genres = objectMapper.treeToValue(json.get("genres"), GenreDTO[].class);
 
-        return genreListResponse.getGenres().stream()
-                .collect(Collectors.toMap(GenreDTO::getId, GenreDTO::getGenreName));
+        return Arrays.stream(genres).collect(Collectors.toSet());
     }
 
     public static List<PersonDTO> fetchMovieCast(Long movieId) throws IOException, InterruptedException {
@@ -195,7 +196,6 @@ public class MovieService {
         int page = 1;
         int totalPages;
         List<MovieDTO> allMovies = new LinkedList<>();
-        Map<Integer, String> genreMap = fetchGenres();
 
         try {
             do {
@@ -227,67 +227,11 @@ public class MovieService {
                 }
 
                 List<MovieDTO> movies = movieResponse.getResults();
-                movies.forEach(movie -> movie.setGenreNames(genreMap)); //Set genre names
-                allMovies.addAll(movies); // Add movies from the current page to the list
 
-                totalPages = movieResponse.getTotalPages();
-                page++;
-
-                System.out.printf("Progress: %d%%%n", (int) Math.floor((double) page / totalPages * 100));
-
-            } while (page <= totalPages);
-
-            return allMovies;
-        } catch (IOException | InterruptedException | RuntimeException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public static List<MovieDTO> getAllDanishMoviesWithActors() throws IOException, InterruptedException {
-        int page = 1;
-        int totalPages;
-        List<MovieDTO> allMovies = new LinkedList<>();
-        List<PersonDTO> allCast = new LinkedList<>();
-        Map<Integer, String> genreMap = fetchGenres();
-
-        try {
-            do {
-                StringBuilder url = new StringBuilder("https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&page=")
-                        .append(page)
-                        .append("&primary_release_date.gte=2019-09-01&sort_by=primary_release_date.asc&with_original_language=da&api_key=")
-                        .append(API_KEY);
-                HttpClient client = HttpClient.newHttpClient();
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(url.toString()))
-                        .GET()
-                        .build();
-
-                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-                if (response.statusCode() != 200) {
-                    throw new RuntimeException("Failed to fetch movies: HTTP code " + response.statusCode());
-                }
-
-                ObjectMapper objectMapper = new ObjectMapper();
-                objectMapper.registerModule(new JavaTimeModule());
-
-                String jsonString = response.body();
-                MovieResponseDTO movieResponse = objectMapper.readValue(jsonString, MovieResponseDTO.class);
-
-                if (movieResponse.getResults() == null || movieResponse.getResults().isEmpty()) {
-                    System.out.println("No movies found for this page.");
-                    break;
-                }
-
-                List<MovieDTO> movies = movieResponse.getResults();
-                movies.forEach(movie -> movie.setGenreNames(genreMap)); //Set genre names
-
-                for (MovieDTO movie : movies) {
-                    List<PersonDTO> cast = fetchMovieCast((long) movie.getId());
-                    movie.setCast(cast);
-                    allCast.addAll(cast);
-                }
+//                for (MovieDTO movie : movies) {
+//                    List<PersonDTO> cast = fetchMovieCast((long) movie.getId());
+//                    movie.setCast(cast);
+//                }
 
                 allMovies.addAll(movies); // Add movies from the current page to the list
 
@@ -304,6 +248,65 @@ public class MovieService {
         }
         return null;
     }
+
+//    public static List<MovieDTO> getAllDanishMoviesWithActors() throws IOException, InterruptedException {
+//        int page = 1;
+//        int totalPages;
+//        List<MovieDTO> allMovies = new LinkedList<>();
+//        Map<Integer, String> genreMap = fetchGenres();
+//
+//        try {
+//            do {
+//                StringBuilder url = new StringBuilder("https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&page=")
+//                        .append(page)
+//                        .append("&primary_release_date.gte=2019-09-01&sort_by=primary_release_date.asc&with_original_language=da&api_key=")
+//                        .append(API_KEY);
+//                HttpClient client = HttpClient.newHttpClient();
+//                HttpRequest request = HttpRequest.newBuilder()
+//                        .uri(URI.create(url.toString()))
+//                        .GET()
+//                        .build();
+//
+//                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+//
+//                if (response.statusCode() != 200) {
+//                    throw new RuntimeException("Failed to fetch movies: HTTP code " + response.statusCode());
+//                }
+//
+//                ObjectMapper objectMapper = new ObjectMapper();
+//                objectMapper.registerModule(new JavaTimeModule());
+//
+//                String jsonString = response.body();
+//                MovieResponseDTO movieResponse = objectMapper.readValue(jsonString, MovieResponseDTO.class);
+//
+//                if (movieResponse.getResults() == null || movieResponse.getResults().isEmpty()) {
+//                    System.out.println("No movies found for this page.");
+//                    break;
+//                }
+//
+//                List<MovieDTO> movies = movieResponse.getResults();
+//                movies.forEach(movie -> movie.setGenreNames(genreMap)); //Set genre names
+//
+//                for (MovieDTO movie : movies) {
+//                    List<PersonDTO> cast = fetchMovieCast((long) movie.getId());
+//                    movie.setCast(cast);
+//                }
+//
+//                allMovies.addAll(movies); // Add movies from the current page to the list
+//
+//                totalPages = movieResponse.getTotalPages();
+//                page++;
+//
+//                System.out.printf("Progress: %d%%%n", (int) Math.floor((double) page / totalPages * 100));
+//
+//            } while (page <= totalPages);
+//
+//            return allMovies;
+//        } catch (IOException | InterruptedException | RuntimeException e) {
+//            e.printStackTrace();
+//        }
+//        return null;
+//    }
 
 
 }
