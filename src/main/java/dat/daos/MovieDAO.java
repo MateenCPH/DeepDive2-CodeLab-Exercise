@@ -192,7 +192,7 @@ public class MovieDAO implements IDAO<MovieDTO> {
         return movieDTOs;
     }
 
-    public List<MovieDTO> getMovieBySearchIgnoringCase(String search) {
+    public List<MovieDTO> getMoviesByTitle(String search) {
         List<MovieDTO> movieDTOs = new ArrayList<>();
 
         try (EntityManager em = emf.createEntityManager()) {
