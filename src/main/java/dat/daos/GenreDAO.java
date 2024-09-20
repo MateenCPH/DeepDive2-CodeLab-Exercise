@@ -7,6 +7,7 @@ import dat.entities.Movie;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -17,19 +18,6 @@ public class GenreDAO implements IDAO<Genre> {
 
     public GenreDAO(EntityManagerFactory emf) {
         this.emf = emf;
-    }
-
-
-    public List<Movie> getMoviesByGenre(String genreName) {
-        try (EntityManager em = emf.createEntityManager()) {
-            TypedQuery<Movie> query = em.createQuery(
-                    "SELECT m FROM Movie m JOIN m.genres g WHERE g.id = :genreId", Movie.class);
-            query.setParameter("genreId", genreName);
-            return query.getResultList();
-        } catch (PersistenceException e) {
-            System.out.println("Error while retrieving movies by genre: " + e);
-            return null;
-        }
     }
 
     @Override
@@ -61,7 +49,6 @@ public class GenreDAO implements IDAO<Genre> {
             System.out.println("Error updating Genre");
             return null;
         }
-
     }
 
     @Override
@@ -124,5 +111,4 @@ public class GenreDAO implements IDAO<Genre> {
         // Return the list of all retrieved genres
         return allGenres;
     }
-
 }

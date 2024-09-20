@@ -36,8 +36,6 @@ public class MovieDTO {
     private boolean video;
     @JsonProperty("vote_average")
     private double voteAverage;
-    @JsonProperty("vote_count")
-    private int voteCount;
     @JsonProperty("genre_ids")
     private List<Long> genreIds = new ArrayList<>();
     @JsonIgnore

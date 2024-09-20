@@ -2,6 +2,7 @@ package dat;
 
 import dat.daos.GenreDAO;
 import dat.daos.MovieDAO;
+import dat.daos.PersonDAO;
 import dat.dtos.GenreDTO;
 import dat.dtos.MovieDTO;
 import dat.entities.Genre;
@@ -16,44 +17,79 @@ import java.util.Map;
 import java.util.Set;
 
 public class Main {
+    private static EntityManagerFactory emf = dat.config.HibernateConfig.getEntityManagerFactory("sp1_movie");
+    private static GenreDAO genreDAO = new GenreDAO(emf);
+    private static MovieDAO movieDAO = new MovieDAO(emf);
+    private static PersonDAO personDAO = new PersonDAO(emf);
+
     public static void main(String[] args) throws IOException, InterruptedException {
 
+        //Set up the database via this method:
+        //setup();
 
-        EntityManagerFactory emf = dat.config.HibernateConfig.getEntityManagerFactory("sp1_movie");
+        //Get all movies in the database and print them
+        //getAllMoviesInDB();
 
-        //System.out.println(MovieService.getMovieById(139));
-        //List<MovieDTO> movies = MovieService.getByRating(5.9, 6);
-        //movies.forEach(System.out::println);
-        //List<MovieDTO> movies = MovieService.getAllMoviesByReleaseDate("2023-09-01");
+        //Get all movies in the database with a specific genre and print them
+        //getMoviesByGenre("Action");
 
-        //List<MovieDTO> movies = MovieService.getAllDanishMoviesWithActors();
-        //movies.forEach(System.out::println);
+        //Get all movies in the database with a specific search and print them
+        //getMoviesBySearch("kælling");
 
-        //List<MovieDTO> movieDTOS = MovieService.getAllDanishMovies();
-        //movieDTOS.forEach(System.out::println);
+        //Get all movies in the database in between two specific ratings and print them
+        //getMoviesByRating(5.9, 6);
 
-        GenreDAO genreDAO = new GenreDAO(emf);
+        //Get all genres in the database and print them
+        getAllGenresInDB();
+
+    }
+
+    public static void getAllMoviesInDB() {
+        Set<MovieDTO> movieDTOS = movieDAO.getAll();
+        movieDTOS.forEach(System.out::println);
+    }
+
+    public static void getMoviesByGenre(String genre) {
+        List<MovieDTO> movieDTOS = movieDAO.getMoviesByGenre(genre);
+        movieDTOS.forEach(System.out::println);
+    }
+
+    public static void getMoviesBySearch(String search) {
+        List<MovieDTO> movieDTOS = movieDAO.getMovieBySearchIgnoringCase(search);
+        movieDTOS.forEach(System.out::println);
+    }
+
+    public static void getMoviesByRating(double minRating, double maxRating) {
+        List<MovieDTO> movieDTOS = movieDAO.getMoviesByRating(minRating, maxRating);
+        movieDTOS.forEach(System.out::println);
+    }
+
+    public static void getAllGenresInDB() {
+        Set<Genre> genres = genreDAO.getAll();
+        genres.forEach(System.out::println);
+    }
+
+    public static void setup() {
+        try {
+            setupGenres();
+            setupMovies();
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void setupGenres() throws IOException, InterruptedException {
         Set<GenreDTO> genreDTOs = MovieService.fetchGenres();
         for (GenreDTO genreDTO : genreDTOs) {
             Genre genre = new Genre(genreDTO);
             genreDAO.create(genre);
         }
+    }
 
-        MovieDAO movieDAO = new MovieDAO(emf);
-        List<MovieDTO> movieDTO = MovieService.getAllDanishMovies();
-        EntityManager em = emf.createEntityManager();
-
-        for (MovieDTO m : movieDTO) {
-            movieDAO.saveMovie(m);
+    public static void setupMovies() throws IOException, InterruptedException {
+        List<MovieDTO> movieDTOs = MovieService.getAllDanishMovies();
+        for (MovieDTO movieDTO : movieDTOs) {
+            movieDAO.create(movieDTO);
         }
-
-
-//        MovieDTO m1 = movieDTO.get(1);
-//
-//        List<String> gen = m1.getGenreNames();
-//
-//        for(String genres : gen){
-//            System.out.println(genres);
-//        }
     }
 }
