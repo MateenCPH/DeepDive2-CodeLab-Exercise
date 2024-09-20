@@ -22,13 +22,13 @@ public class Main {
     public static void main(String[] args) throws IOException, InterruptedException {
 
         // Set up the database via this method:
-        //setup();
+        setup();
 
         // Get all movies in the database and print them
-        //getAllMoviesInDB();
+        getAllMoviesInDB();
 
         // Get all genres in the database and print them
-        //getAllGenresInDB();
+        getAllGenresInDB();
 
         // Get all movies in the database with a specific genre and print them
         //getMoviesByGenre("Action");

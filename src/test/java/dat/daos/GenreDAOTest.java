@@ -26,6 +26,7 @@ class GenreDAOTest {
 
     @BeforeEach
     void setUp() {
+
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.createQuery("DELETE FROM Movie").executeUpdate(); // Clean up Movie
@@ -33,11 +34,11 @@ class GenreDAOTest {
 
 
             g1 = Genre.builder()
-                    .genreName("Action")
+                    .name("Action")
                     .build();
 
             g2 = Genre.builder()
-                    .genreName("Horror")
+                    .name("Horror")
                     .build();
 
             em.persist(g1);
@@ -58,7 +59,7 @@ class GenreDAOTest {
     void create() {
 
         Genre g3 = Genre.builder()
-                .genreName("Drama")
+                .name("Drama")
                 .build();
         dao.create(g3);
 
@@ -67,10 +68,10 @@ class GenreDAOTest {
     @Test
     void update() {
 
-        g2.setGenreName("Thriller");
+        g2.setName("Thriller");
         Genre updated = dao.update(g2);
         assertNotNull(updated);
-        assertEquals("Thriller", updated.getGenreName());
+        assertEquals("Thriller", updated.getName());
 
     }
 

@@ -23,35 +23,12 @@ public class GenreDAO implements IDAO<Genre> {
     @Override
     public Genre create(Genre genre) {
         try (EntityManager em = emf.createEntityManager()) {
-            Genre existingGenre = null;
-
-            try {
-                // Attempt to find the genre by name
-                existingGenre = em.createQuery("SELECT g FROM Genre g WHERE g.genreName = :genreName", Genre.class)
-                        .setParameter("genreName", genre.getGenreName())
-                        .getSingleResult();
-            } catch (NoResultException e) {
-                System.out.println("Error, this genre is not in the database");
-                return null;
-                // Genre does not exist
-            }
-
-            if (existingGenre != null) {
-                // update its details
-                em.getTransaction().begin();
-                existingGenre.setGenreName(genre.getGenreName());  // Update other fields as needed
-                em.merge(existingGenre);
-                em.getTransaction().commit();
-                return existingGenre;
-            } else {
-                // create a new genre
-                em.getTransaction().begin();
-                em.persist(genre);
-                em.getTransaction().commit();
-                return genre;
-            }
+            em.getTransaction().begin();
+            em.persist(genre);
+            em.getTransaction().commit();
+            return genre;
         } catch (PersistenceException e) {
-            System.out.println("Error creating Genre" + e.getMessage());
+            System.out.println("Error creating Genre" + e + e.getMessage());
             return null;
         }
     }
