@@ -1,7 +1,6 @@
 package dat.daos;
 
 import dat.config.HibernateConfig;
-import dat.dtos.MovieDTO;
 import dat.entities.Genre;
 import dat.entities.Movie;
 import dat.entities.Person;
@@ -10,7 +9,6 @@ import jakarta.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.*;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,7 +29,7 @@ class MovieDAOTest {
    void setUp() {
        try(EntityManager em = emf.createEntityManager()){
            Genre genre = new Genre();
-           genre.setGenreName("Action");
+           genre.setName("Action");
 
            m1 = Movie.builder().id(1339624L).title("Free Fall").originalTitle("Frit Fald").adult(false).originalLanguage("da").popularity(1.393).releaseDate(LocalDate.of(2024,8,26)).video(false).voteAverage(0.0).video(false).genres(List.of(genre)).cast(null).build();
            m2 = Movie.builder().id(1353670L).title("Amnesia").originalTitle("Amnesia").adult(false).originalLanguage("da").popularity(5.529).releaseDate(LocalDate.of(2024,9,13)).video(false).voteAverage(9.0).video(false).genres(List.of(genre)).cast(null).build();
@@ -76,7 +74,7 @@ class MovieDAOTest {
     void create() {
         // Create a Genre object
         Genre genre = new Genre();
-        genre.setGenreName("Action");
+        genre.setName("Action");
 
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
