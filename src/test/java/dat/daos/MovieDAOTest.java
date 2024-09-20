@@ -111,6 +111,7 @@ class MovieDAOTest {
 
         // Build a movie object without setting the ID manually (let Hibernate assign it)
         Movie m = Movie.builder()
+                .id(3L)
                 .title("Free Fall 2")
                 .originalTitle("Frit Fald 2")
                 .adult(false)

@@ -3,7 +3,6 @@ package dat.daos;
 import dat.config.HibernateConfig;
 import dat.entities.Genre;
 import dat.entities.Movie;
-import dat.entities.Person;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.BeforeAll;
@@ -57,17 +56,14 @@ class GenreDAOTest {
 
     @Test
     void create() {
-
         Genre g3 = Genre.builder()
                 .name("Drama")
                 .build();
         dao.create(g3);
-
     }
 
     @Test
     void update() {
-
         g2.setName("Thriller");
         Genre updated = dao.update(g2);
         assertNotNull(updated);
@@ -77,17 +73,12 @@ class GenreDAOTest {
 
     @Test
     void delete() {
-
         dao.delete(g1);
-
-
     }
 
     @Test
     void getById() {
-
        // int au = dao.getById(g1.getId());
-
     }
 
     @Test
