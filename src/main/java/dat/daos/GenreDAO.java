@@ -5,7 +5,6 @@ import dat.dtos.MovieDTO;
 import dat.entities.Genre;
 import dat.entities.Movie;
 import jakarta.persistence.*;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -48,7 +47,6 @@ public class GenreDAO implements IDAO<Genre> {
             System.out.println("Error updating Genre");
             return null;
         }
-
     }
 
     @Override
@@ -103,10 +101,8 @@ public class GenreDAO implements IDAO<Genre> {
                     throw new EntityNotFoundException(errorMessage, e);
                 }
             }
-        } finally {
-            if (em != null) {
-                em.close();
-            }
+        } catch (EntityNotFoundException e) {
+            System.out.println(e.getMessage());
         }
         // Return the list of all retrieved genres
         return allGenres;

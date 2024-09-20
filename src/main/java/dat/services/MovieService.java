@@ -58,9 +58,7 @@ public class MovieService {
         CastResponseDTO castResponse = objectMapper.readValue(jsonString, CastResponseDTO.class);
 
         return castResponse.getCast();
-
     }
-
 
     public static MovieDTO getMovieById(int id) throws IOException, InterruptedException {
         String url = BASE_URL + id + "?api_key=" + API_KEY;

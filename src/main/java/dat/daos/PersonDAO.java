@@ -56,7 +56,6 @@ public class  PersonDAO implements IDAO<Person>{
             System.out.println("Error deleting person" + e );
             return;
         }
-
     }
 
     @Override
