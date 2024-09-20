@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 /*
 
-
 public class ConverterService {
 
     private EntityManagerFactory emf;
@@ -23,8 +22,6 @@ public class ConverterService {
     public ConverterService(EntityManagerFactory emf){
         this.emf = emf;
     }
-
-
 
     public Movie mapMovieDTOToEntity(MovieDTO movieDTO, EntityManager em) {
         Movie movie = new Movie();
@@ -126,15 +123,3 @@ public class ConverterService {
 
         return null;
     }*/
-
-
-
-
-
-
-
-
-
-
-
-

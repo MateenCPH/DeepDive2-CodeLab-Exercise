@@ -25,9 +25,7 @@ public class MovieDAO implements IDAO<MovieDTO> {
 
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
-
             movie.setGenres(genreDAO.getAllGenresPerMovieDTO(movieDTO));
-
             em.persist(movie);
             em.getTransaction().commit();
         } catch (PersistenceException e) {
@@ -37,7 +35,6 @@ public class MovieDAO implements IDAO<MovieDTO> {
 
         return new MovieDTO(movie);
     }
-
 
     @Override
     public MovieDTO update(MovieDTO movieDTO) {
@@ -211,6 +208,70 @@ public class MovieDAO implements IDAO<MovieDTO> {
             return null;
         }
         return movieDTOs;
+    }
 
+    public double getTotalAverageRatingOfAllMovies() {
+        try (EntityManager em = emf.createEntityManager()) {
+            // Fetch the average rating of all movies
+            return em.createQuery("SELECT AVG(m.voteAverage) FROM Movie m WHERE m.voteAverage > 0", Double.class)
+                    .getSingleResult();
+        } catch (PersistenceException e) {
+            System.out.println("Error while getting the average rating of all movies: " + e);
+            return -1;
+        }
+    }
+
+    public List<MovieDTO> getTopTenHighestRatedMovies() {
+        List<MovieDTO> movieDTOs = new ArrayList<>();
+        try (EntityManager em = emf.createEntityManager()) {
+            // Retrieve the top 10 highest rated movies
+            TypedQuery<Movie> query = em.createQuery(
+                    "SELECT m FROM Movie m WHERE m.voteAverage > 0 ORDER BY m.voteAverage DESC", Movie.class);
+            query.setMaxResults(10);
+            for (Movie movie : query.getResultList()) {
+                MovieDTO movieDTO = new MovieDTO(movie);
+                movieDTOs.add(movieDTO);
+            }
+        } catch (PersistenceException e) {
+            System.out.println("Error while retrieving top 10 highest rated movies: " + e);
+            return null;
+        }
+        return movieDTOs;
+    }
+
+    public List<MovieDTO> getTopTenLowestRatedMovies() {
+        List<MovieDTO> movieDTOs = new ArrayList<>();
+        try (EntityManager em = emf.createEntityManager()) {
+            // Retrieve the top 10 lowest rated movies
+            TypedQuery<Movie> query = em.createQuery(
+                    "SELECT m FROM Movie m WHERE m.voteAverage > 0 ORDER BY m.voteAverage ASC", Movie.class);
+            query.setMaxResults(10);
+            for (Movie movie : query.getResultList()) {
+                MovieDTO movieDTO = new MovieDTO(movie);
+                movieDTOs.add(movieDTO);
+            }
+        } catch (PersistenceException e) {
+            System.out.println("Error while retrieving top 10 lowest rated movies: " + e);
+            return null;
+        }
+        return movieDTOs;
+    }
+
+    public List<MovieDTO> getTopTenMostPopularMovies() {
+        List<MovieDTO> movieDTOs = new ArrayList<>();
+        try (EntityManager em = emf.createEntityManager()) {
+            // Retrieve the top 10 most popular movies
+            TypedQuery<Movie> query = em.createQuery(
+                    "SELECT m FROM Movie m ORDER BY m.popularity DESC", Movie.class);
+            query.setMaxResults(10);
+            for (Movie movie : query.getResultList()) {
+                MovieDTO movieDTO = new MovieDTO(movie);
+                movieDTOs.add(movieDTO);
+            }
+        } catch (PersistenceException e) {
+            System.out.println("Error while retrieving top 10 most popular movies: " + e);
+            return null;
+        }
+        return movieDTOs;
     }
 }

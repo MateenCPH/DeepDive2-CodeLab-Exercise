@@ -33,8 +33,10 @@ public class Movie {
     private boolean video;
     @Column(name = "vote_average")
     private double voteAverage;
+
     @ManyToMany
     private List<Genre> genres;
+
     @OneToMany
     private List<MovieCast> cast;
 
