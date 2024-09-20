@@ -7,17 +7,16 @@ import dat.entities.Movie;
 import dat.entities.Person;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.*;
 
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class MovieDAOTest {
-    private static IDAO<Movie> dao;
+    private static IDAO<MovieDTO> dao;
     private static EntityManagerFactory emf;
     Movie m1, m2;
     Person p1, p2;
@@ -37,10 +36,11 @@ class MovieDAOTest {
            em.createQuery("DELETE FROM Genre").executeUpdate();
 
            Genre genre = new Genre();
-           genre.setGenreName("Action");
+           genre.setName("Action");
+           genre.setId(22L);
            em.persist(genre);
 
-           m1 = Movie.builder()
+           m1 = Movie.builder().id(1L)
                    .title("Free Fall")
                    .originalTitle("Frit Fald")
                    .adult(false)
@@ -54,6 +54,7 @@ class MovieDAOTest {
                    .build();
 
            m2 = Movie.builder()
+                   .id(2L)
                    .title("Amnesia")
                    .originalTitle("Amnesia")
                    .adult(false)
@@ -67,12 +68,14 @@ class MovieDAOTest {
                    .build();
 
            p1 = Person.builder()
+                   .id(1L)
                    .name("Lasse Jørgensen")
                    .role("Acting")
                    .gender(2)
                    .build();
 
            p2 = Person.builder()
+                   .id(2L)
                    .name("Sebastian Poulsen")
                    .role("Acting")
                    .gender(2)
@@ -97,7 +100,8 @@ class MovieDAOTest {
     void create() {
         // Create a Genre object
         Genre genre = new Genre();
-        genre.setGenreName("Action");
+        genre.setName("Action");
+        genre.setId(69L);
 
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
@@ -120,18 +124,19 @@ class MovieDAOTest {
                 .build();
 
         // Ensure dao.create returns a Movie object (no need for casting if dao is typed)
-        Movie created = (Movie) dao.create(m);
+        MovieDTO movieDTO = new MovieDTO(m);
+        movieDTO = dao.create(movieDTO);
 
         // Assert the movie was created successfully
-        Assertions.assertNotNull(created, "The movie should be created successfully.");
-        Assertions.assertNotNull(created.getId(), "The movie should have an ID after creation.");
+        Assertions.assertNotNull(movieDTO, "The movie should be created successfully.");
+        Assertions.assertNotNull(movieDTO.getId(), "The movie should have an ID after creation.");
     }
 
     @Test
     @DisplayName("Test get Movie by ID")
     void getById() {
         Long expected = m1.getId();
-        Movie movie = dao.getById(m1.getId());
+        MovieDTO movie = dao.getById(m1.getId());
 
         Long actual = movie.getId();
 
@@ -144,7 +149,7 @@ class MovieDAOTest {
     void delete() {
         int numberOf = dao.getAll().size();
 
-        dao.delete(m2);
+        dao.delete(new MovieDTO(m2));
 
         int expected = numberOf - 1;
         int actual = dao.getAll().size();
@@ -160,12 +165,13 @@ class MovieDAOTest {
                 .title("Deep Dive")
                 .build();
         m2.setTitle(newMovie.getTitle());
-        dao.update(m2);
+        dao.update(new MovieDTO(m2));
+
         String expected = "Deep Dive";
         String actual = dao.getById(m2.getId()).getTitle();
+
         assertEquals(expected, actual);
     }
-
 
     @Test
     @DisplayName("Test getting all Movies")
