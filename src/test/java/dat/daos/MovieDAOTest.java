@@ -8,6 +8,7 @@ import dat.entities.Genre;
 import dat.entities.Movie;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.*;
 
 import java.time.LocalDate;
@@ -80,17 +81,18 @@ class MovieDAOTest {
                     List.of(genreDTO1.getId(), genreDTO2.getId(), genreDTO3.getId()),
                     null);
 
+
             movieDTOS = new ArrayList<>();
             movieDTOS.add(movieDTO1);
             movieDTOS.add(movieDTO2);
 
+            em.getTransaction().commit();
+
+
             genreDTOS.stream()
                     .map(Genre::new)
                     .forEach(em::persist);
-//            for (GenreDTO genreDTO : genreDTOS) {
-//                Genre genre = new Genre(genreDTO);
-//                em.persist(genre);
-//            }
+
 
             movieDTOS.stream()
                     .map(movieDTO -> {
@@ -107,6 +109,14 @@ class MovieDAOTest {
                         return movieEntity;
                     })
                     .forEach(em::persist);
+
+
+//                        for (GenreDTO genreDTO : genreDTOS) {
+//                Genre genre = new Genre(genreDTO);
+//                em.persist(genre);
+//            }
+//
+//
 //            for (MovieDTO movieDTO : movieDTOS) {
 //                Movie movieEntity = new Movie(movieDTO);
 //
@@ -129,25 +139,6 @@ class MovieDAOTest {
 //                //Persist the movie entity along with its associated genres
 //                em.persist(movieEntity);
 //            }
-//            p1 = Person.builder()
-//                    .id(1L)
-//                    .name("Lasse Jørgensen")
-//                    .role("Acting")
-//                    .gender(2)
-//                    .build();
-//
-//            p2 = Person.builder()
-//                    .id(2L)
-//                    .name("Sebastian Poulsen")
-//                    .role("Acting")
-//                    .gender(2)
-//                    .build();
-//
-//            em.persist(m1);
-//            em.persist(m2);
-//            em.persist(p1);
-//            em.persist(p2);
-//            em.getTransaction().commit();
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {
