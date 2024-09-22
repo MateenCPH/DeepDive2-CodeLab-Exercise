@@ -24,10 +24,10 @@ public class Main {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         // Set up the database via this method:
-        // setup();
+         setup();
 
         // Display all movies in the database
-        // displayAllMoviesInDB();
+         displayAllMoviesInDB();
 
         // Display all genres in the database
         // displayAllGenresInDB();
