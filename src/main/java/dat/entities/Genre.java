@@ -15,6 +15,7 @@ import java.util.List;
 @Table(name = "genre")
 public class Genre {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
 
