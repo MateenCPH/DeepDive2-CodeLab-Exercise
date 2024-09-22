@@ -41,7 +41,7 @@ public class Movie {
     private List<MovieCast> cast;
 
     public Movie(MovieDTO movieDTO) {
-        this.id = (long) movieDTO.getId(); // Cast int to Long
+        this.id = movieDTO.getId(); // Cast int to Long
         this.title = movieDTO.getTitle();
         this.originalTitle = movieDTO.getOriginalTitle();
         this.adult = movieDTO.isAdult();
