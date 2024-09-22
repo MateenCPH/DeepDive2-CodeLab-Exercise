@@ -1,0 +1,42 @@
+@startuml
+
+class Genre {
+    - Long id
+    - String name
+    + Genre(GenreDTO)
+}
+
+class Movie {
+    - Long id
+    - String title
+    - String originalTitle
+    - boolean adult
+    - String originalLanguage
+    - double popularity
+    - LocalDate releaseDate
+    - boolean video
+    - double voteAverage
+    + Movie(MovieDTO)
+}
+
+class MovieCast {
+    - Long id
+    - List<Movie> movies
+    - Person person
+    - String character
+    + MovieCast(Movie, Person, String)
+}
+
+class Person {
+    - Long id
+    - String name
+    - String role
+    - int gender
+    + Person(PersonDTO)
+}
+
+Genre "1" -- "*" Movie : genres
+Movie "1" -- "*" MovieCast : cast
+MovieCast "*" -- "1" Person : person
+
+@enduml
