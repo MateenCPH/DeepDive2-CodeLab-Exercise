@@ -39,54 +39,38 @@ public class MovieDAO implements IDAO<MovieDTO> {
     @Override
     public MovieDTO update(MovieDTO movieDTO) {
         Movie movie = new Movie(movieDTO);
+
         try (EntityManager em = emf.createEntityManager()) {
-            Movie existingMovie = em.find(Movie.class, movie.getId());
-
-            if (existingMovie == null) {
-                System.out.println("Movie with ID " + movie.getId() + " not found.");
-                return null;
-            }
-
-            // Check if the updated title is unique, excluding the current movie
-            String query = "SELECT COUNT(m) FROM Movie m WHERE m.title = :title AND m.id != :id";
-            Long count = em.createQuery(query, Long.class)
-                    .setParameter("title", movie.getTitle())
-                    .setParameter("id", movie.getId())
-                    .getSingleResult();
-
-            if (count > 0) {
-                System.out.println("A movie with the title '" + movie.getTitle() + "' already exists.");
-                return null;
-            }
-
-            // Check if updatedMovie has at least one genre
-            if (movie.getGenres() == null || movie.getGenres().isEmpty()) {
-                System.out.println("Movie must have at least one genre.");
-                return null;
-            }
-
             em.getTransaction().begin();
 
-            // Update fields
-            existingMovie.setTitle(movie.getTitle());
-            existingMovie.setOriginalTitle(movie.getOriginalTitle());
-            existingMovie.setAdult(movie.isAdult());
-            existingMovie.setOriginalLanguage(movie.getOriginalLanguage());
-            existingMovie.setPopularity(movie.getPopularity());
-            existingMovie.setReleaseDate(movie.getReleaseDate());
-            existingMovie.setVideo(movie.isVideo());
-            existingMovie.setVoteAverage(movie.getVoteAverage());
-            existingMovie.setGenres(movie.getGenres());
-            //existingMovie.setPersons(movie.getPersons());
+            Movie foundMovie = em.find(Movie.class, movie.getId());
 
-            MovieDTO movieDTO1 = new MovieDTO(existingMovie);
+            if (movie.getTitle() != null) {
+                foundMovie.setTitle(movie.getTitle());
+            }
+            if (movie.getOriginalTitle() != null) {
+                foundMovie.setOriginalTitle(movie.getOriginalTitle());
+            }
+            foundMovie.setAdult(false); // We don't want to change this
+            if (movie.getOriginalLanguage() != null) {
+                foundMovie.setOriginalLanguage(movie.getOriginalLanguage());
+            }
+            if (movie.getPopularity() != foundMovie.getPopularity()) {
+                foundMovie.setPopularity(movie.getPopularity());
+            }
+            if (movie.getReleaseDate() != null) {
+                foundMovie.setReleaseDate(movie.getReleaseDate());
+            }
+            foundMovie.setVideo(false); // We don't want to change this
+            if (movie.getVoteAverage() != foundMovie.getVoteAverage()) {
+                foundMovie.setVoteAverage(movie.getVoteAverage());
+            }
+            if (movie.getGenres() != null) {
+                foundMovie.setGenres(movie.getGenres());
+            }
 
             em.getTransaction().commit();
-            em.close();
-            return movieDTO1;
-        } catch (PersistenceException e) {
-            System.out.println("Error while updating movie: " + e);
-            return null;
+            return new MovieDTO(foundMovie);
         }
     }
 
