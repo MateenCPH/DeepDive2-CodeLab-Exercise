@@ -27,11 +27,13 @@ public class HibernateConfig {
             emf = createEMF(false, DBName);
         return emf;
     }
+
     public static EntityManagerFactory getEntityManagerFactoryForTest() {
         if (emfTest == null)
             emfTest = createEMF(true, "");
         return emfTest;
     }
+
     // TODO: IMPORTANT: Add Entity classes here for them to be registered with Hibernate
     private static void getAnnotationConfiguration(Configuration configuration) {
         // Add all entity classes here
@@ -48,13 +50,11 @@ public class HibernateConfig {
             Properties props = new Properties();
             // Set the properties
             setBaseProperties(props);
-            if(forTest) {
+            if (forTest) {
                 props = setTestProperties(props);
-            }
-            else if(System.getenv("DEPLOYED") != null) {
+            } else if (System.getenv("DEPLOYED") != null) {
                 setDeployedProperties(props, DBName);
-            }
-            else {
+            } else {
                 props = setDevProperties(props, DBName);
             }
             configuration.setProperties(props);
@@ -76,7 +76,7 @@ public class HibernateConfig {
         return "emp_ex";
     }
 
-    private static Properties setBaseProperties(Properties props){
+    private static Properties setBaseProperties(Properties props) {
         props.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
         props.put("hibernate.connection.driver_class", "org.postgresql.Driver");
         props.put("hibernate.hbm2ddl.auto", "update");
@@ -87,19 +87,21 @@ public class HibernateConfig {
         return props;
     }
 
-    private static Properties setDeployedProperties(Properties props, String DBName){
+    private static Properties setDeployedProperties(Properties props, String DBName) {
         props.setProperty("hibernate.connection.url", System.getenv("CONNECTION_STR") + DBName);
         props.setProperty("hibernate.connection.username", System.getenv("DB_USERNAME"));
         props.setProperty("hibernate.connection.password", System.getenv("DB_PASSWORD"));
         return props;
     }
-    private static Properties setDevProperties(Properties props, String DBName){
-        props.put("hibernate.connection.url", "jdbc:postgresql://localhost:5432/"+ DBName);
+
+    private static Properties setDevProperties(Properties props, String DBName) {
+        props.put("hibernate.connection.url", "jdbc:postgresql://localhost:5432/" + DBName);
         props.put("hibernate.connection.username", "postgres");
         props.put("hibernate.connection.password", "postgres");
         return props;
     }
-    private static Properties setTestProperties(Properties props){
+
+    private static Properties setTestProperties(Properties props) {
 //        props.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
         props.put("hibernate.connection.driver_class", "org.testcontainers.jdbc.ContainerDatabaseDriver");
         props.put("hibernate.connection.url", "jdbc:tc:postgresql:15.3-alpine3.18:///test_db");

@@ -30,12 +30,10 @@ class GenreDAOTest {
 
     @BeforeEach
     void setUp() {
-
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.createQuery("DELETE FROM Movie").executeUpdate();
             em.createQuery("DELETE FROM Genre").executeUpdate();
-
 
             g1 = Genre.builder()
                     .name("Action")
@@ -56,9 +54,7 @@ class GenreDAOTest {
 
         m1 = new MovieDTO();
         m1.setGenreIds(genreIdList);
-
     }
-
 
     @Test
     @DisplayName("Test create Genre")
@@ -76,13 +72,11 @@ class GenreDAOTest {
         Genre updated = dao.update(g2);
         assertNotNull(updated);
         assertEquals("Thriller", updated.getName());
-
     }
 
     @Test
     @DisplayName("Test the delete Genre")
     void delete() {
-
         int size = dao.getAll().size();
         dao.delete(g1);
 
@@ -94,17 +88,14 @@ class GenreDAOTest {
     @Test
     @DisplayName("Test getting a genre by id")
     void getById() {
-
         Genre genreFound = dao.getById(g1.getId());
         assertNotNull(genreFound);
         assertEquals("Action", genreFound.getName());
-
     }
 
     @Test
     @DisplayName("Test getting all genres")
     void getAll() {
-
         int ex = 2;
         int au = dao.getAll().size();
         assertEquals(ex, au);
@@ -113,12 +104,9 @@ class GenreDAOTest {
     @Test
     @DisplayName("Test to see if we can get all movies with a genre")
     void TestGetAllGenresPerMovieDTO() {
-
         List<Genre> genre = dao.getAllGenresPerMovieDTO(m1);
 
         assertNotNull(genre);
         assertEquals(2, genre.size());
-
-
     }
 }

@@ -25,19 +25,25 @@ public class MovieDTO {
 
     private Long id;
     private String title;
+
     @JsonProperty("original_title")
     private String originalTitle;
     private boolean adult;
+
     @JsonProperty("original_language")
     private String originalLanguage;
+
     private double popularity;
     @JsonProperty("release_date")
     private LocalDate releaseDate;
     private boolean video;
+
     @JsonProperty("vote_average")
     private double voteAverage;
+
     @JsonProperty("genre_ids")
     private List<Long> genreIds = new ArrayList<>();
+
     @JsonIgnore
     private List<PersonDTO> cast;  // This will be populated later
 

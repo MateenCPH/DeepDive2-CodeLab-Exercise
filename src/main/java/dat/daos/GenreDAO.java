@@ -5,6 +5,7 @@ import dat.dtos.MovieDTO;
 import dat.entities.Genre;
 import dat.entities.Movie;
 import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -83,7 +84,7 @@ public class GenreDAO implements IDAO<Genre> {
     protected List<Genre> getAllGenresPerMovieDTO(MovieDTO movieDTO) {
         // List to hold the Genre objects that will be retrieved from the database
         List<Genre> allGenres = new ArrayList<>();
-        EntityManager em = null;
+        EntityManager em;
 
         try {
             em = emf.createEntityManager();

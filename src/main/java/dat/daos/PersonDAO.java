@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class  PersonDAO implements IDAO<Person>{
+public class PersonDAO implements IDAO<Person> {
 
     private EntityManagerFactory emf;
 
@@ -22,25 +22,25 @@ public class  PersonDAO implements IDAO<Person>{
 
     @Override
     public Person create(Person person) {
-        try(EntityManager em = emf.createEntityManager()){
+        try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.persist(person);
             em.getTransaction().commit();
             return person;
-        } catch (PersistenceException e){
-            System.out.println("Error with persisting person" + e );
+        } catch (PersistenceException e) {
+            System.out.println("Error with persisting person" + e);
             return null;
         }
     }
 
     @Override
     public Person update(Person person) {
-        try(EntityManager em = emf.createEntityManager()){
+        try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             Person updatePerson = em.merge(person);
             em.getTransaction().commit();
             return updatePerson;
-        } catch (Exception e){
+        } catch (Exception e) {
             System.out.println("Error could not update person");
             return null;
         }
@@ -48,19 +48,18 @@ public class  PersonDAO implements IDAO<Person>{
 
     @Override
     public void delete(Person person) {
-        try(EntityManager em = emf.createEntityManager()){
+        try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.remove(person);
             em.getTransaction().commit();
-        } catch (PersistenceException e){
-            System.out.println("Error deleting person" + e );
-            return;
+        } catch (PersistenceException e) {
+            System.out.println("Error deleting person" + e);
         }
     }
 
     @Override
     public Person getById(Long id) {
-        try(EntityManager em = emf.createEntityManager()) {
+        try (EntityManager em = emf.createEntityManager()) {
             return em.find(Person.class, id);
         } catch (Exception e) {
             System.out.println("Error while getting Persons by Id " + e);
@@ -70,11 +69,11 @@ public class  PersonDAO implements IDAO<Person>{
 
     @Override
     public Set<Person> getAll() {
-       try(EntityManager em = emf.createEntityManager()) {
-           return em.createQuery("SELECT p FROM Person p", Person.class).getResultStream().collect(Collectors.toSet());
-       } catch (PersistenceException e){
-           System.out.println("Error while getting Persons list" + e );
-           return null;
-       }
+        try (EntityManager em = emf.createEntityManager()) {
+            return em.createQuery("SELECT p FROM Person p", Person.class).getResultStream().collect(Collectors.toSet());
+        } catch (PersistenceException e) {
+            System.out.println("Error while getting Persons list" + e);
+            return null;
+        }
     }
 }

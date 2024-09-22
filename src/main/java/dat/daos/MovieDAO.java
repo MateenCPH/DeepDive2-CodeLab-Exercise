@@ -68,7 +68,6 @@ public class MovieDAO implements IDAO<MovieDTO> {
             if (movie.getGenres() != null) {
                 foundMovie.setGenres(movie.getGenres());
             }
-
             em.getTransaction().commit();
             return new MovieDTO(foundMovie);
         }
@@ -137,7 +136,6 @@ public class MovieDAO implements IDAO<MovieDTO> {
             TypedQuery<Movie> movieQuery = em.createQuery(
                     "SELECT m FROM Movie m JOIN m.genres g WHERE g.id = :genreId", Movie.class);
             movieQuery.setParameter("genreId", genre.getId());  // Use the found genre's ID
-
 
             for (Movie movie : movieQuery.getResultList()) {
                 MovieDTO movieDTO = new MovieDTO(movie);
