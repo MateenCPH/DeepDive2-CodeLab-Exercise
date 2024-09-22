@@ -1,0 +1,54 @@
+@startuml
+
+class CastResponseDTO {
+    - List<PersonDTO> cast
+}
+
+class GenreDTO {
+    - Long id
+    - String name
+    + GenreDTO(Genre)
+}
+
+class GenreListResponseDTO {
+    - List<GenreDTO> genres
+}
+
+class MovieDTO {
+    - Long id
+    - String title
+    - String originalTitle
+    - boolean adult
+    - String originalLanguage
+    - double popularity
+    - LocalDate releaseDate
+    - boolean video
+    - double voteAverage
+    - List<Long> genreIds
+    - List<PersonDTO> cast
+    + MovieDTO(Movie)
+}
+
+class MovieResponseDTO {
+    - int page
+    - List<MovieDTO> results
+    - int totalResults
+    - int totalPages
+}
+
+class PersonDTO {
+    - Long personId
+    - String name
+    - String role
+    - int gender
+    - String character
+    - int castId
+}
+
+MovieDTO "1" -- "0..*" GenreDTO : has >
+MovieDTO "1" -- "0..*" PersonDTO : has >
+MovieResponseDTO "1" -- "0..*" MovieDTO : contains >
+CastResponseDTO "1" -- "0..*" PersonDTO : has >
+GenreListResponseDTO "1" -- "0..*" GenreDTO : contains >
+
+@enduml
